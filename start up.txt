@@ -1,0 +1,2 @@
+conda activate hiwat
+python manage.py runserver

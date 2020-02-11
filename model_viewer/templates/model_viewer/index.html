@@ -1,0 +1,211 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'model_viewer/style.css' %}" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.1/jquery-migrate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" type="image/png" href="{% static 'model_viewer/favicon.ico' %}" />
+    <title>HIWAT Model Viewer</title>
+
+    <script>
+          
+        $(document).ready(function () {
+
+            $.ajax({
+                url: "ajax/getjson",
+                type: 'GET',
+                success: function (result) {
+                    var data = JSON.parse(result);
+                    var imageLoaded = false;
+                    var getMenuItem = function (itemData, isVariable, isSummaries) {
+                        if (!isSummaries) {
+                            var isSummaries = itemData.title == "Summaries" ? true : false;
+                        }
+                        var cssClass = "nav-item dropdown";
+                        var style = "";
+                        var role = "";
+                        var datatoggle = "";
+                        var ariahaspopup = false;
+                        var ariaexpanded = false;
+                        var acss = "dropdown-item";
+                        var item = $("<li>", { "class": cssClass })
+                        if (!itemData.group) {
+
+                            cssClass = "dropdown-submenu";
+                        } else {
+                            var hideAllDDOnClick = true;
+                        }
+                        if (!isVariable) {
+                            acss = "nav-link dropdown-toggle";
+                            role = "button";
+                            datatoggle = "dropdown";
+                            ariahaspopup = "true";
+                            ariaexpanded = "false";
+                            if (hideAllDDOnClick) {
+                                item.append(
+                                    $("<a>", {
+                                        id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
+                                        href: '#',
+                                        html: itemData.title ? itemData.title : itemData.name,
+                                        "class": acss,
+                                        role: role,
+                                        "aria-haspopup": ariahaspopup,
+                                        "aria-expanded": ariaexpanded,
+                                        "data-toggle": datatoggle,
+                                        onclick: hideAllDD,
+                                    }));
+                            } else {
+                                item.append(
+                                    $("<a>", {
+                                        id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
+                                        href: '#',
+                                        html: itemData.title ? itemData.title : itemData.name,
+                                        "class": acss,
+                                        role: role,
+                                        "aria-haspopup": ariahaspopup,
+                                        "aria-expanded": ariaexpanded,
+                                        "data-toggle": datatoggle,
+                                    }));
+                            }
+                        } else {
+                            item.append(
+                                $("<a>", {
+                                    id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
+                                    href: '#',
+                                    html: itemData.title ? itemData.title : itemData.name,
+                                    "class": acss,
+                                    role: role,
+                                }));
+                        }
+                        
+                        if (isVariable) {
+                            if (isSummaries) {
+                                item.on({
+                                    'click': function () {
+                                        loadImage(itemData.name, true);
+                                    }
+                                });
+                            } else {
+                                if (!imageLoaded) {
+                                    imageLoaded = true;
+                                    loadImage(itemData.name);
+                                }
+                                item.on({
+                                    'click': function () {
+                                        loadImage(itemData.name);
+                                    }
+                                });
+                            }
+                        }
+                        if (itemData.group) {
+                            var labelledby = (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_");
+                            var subList = $("<ul>", {
+                                "class":"dropdown-menu border-0 shadow",
+                                "aria-labelledby": labelledby
+                            }); 
+                            $.each(itemData.group, function () {
+                                subList.append(getMenuItem(this, false, isSummaries));
+                            });
+                            item.append(subList);
+                        }
+                        if (itemData.variable) {
+                            var labelledby = (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_");
+                            var subList = $("<ul>", {
+                                "class":"dropdown-menu border-0 shadow",
+                                "aria-labelledby": labelledby
+                            }); 
+                            $.each(itemData.variable, function () {
+                                subList.append(getMenuItem(this, true, isSummaries));
+                            });
+                            item.append(subList);
+                        }
+                        return item;
+                    };
+
+                    var $menu = $("#mymenu");
+                    $.each(data.config.category, function () {
+                        $menu.append(
+                            getMenuItem(this)
+                        );
+                    });
+                    loadLevels();
+                }
+            });  
+           
+        });
+
+        function loadLevels() {
+            // ------------------------------------------------------- //
+            // Multi Level dropdowns
+            // ------------------------------------------------------ //
+            $("ul.dropdown-menu [data-toggle='dropdown']").on("click", function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                $(this).siblings().toggleClass("show");
+                if (!$(this).next().hasClass('show')) {
+                    $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
+                }
+                $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function (e) {
+                    $('.dropdown-submenu .show').removeClass("show");
+                });
+            });
+            $("#mymenu > li > a").on("click", hideAllDD);   
+        }
+
+        function hideAllDD() {
+            $('.dropdown-menu .show').removeClass("show");
+        }
+
+        function loadImage(which, isSummaries) {
+            //ensmin-tmp2m
+            //https://weather.msfc.nasa.gov/sport/dynamic/hinduKushEnsemble/20190902/hkhEnsemble_20190902-1800_f00100_ensmin-tmp2m.gif
+            var hour = "f00100";
+            if (which.indexOf("6h") > -1) {
+                hour = "f00600";
+            } else if (which.indexOf("12h") > -1) {
+                hour = "f01200";
+            } else if (isSummaries || which.indexOf("24h") > -1) {
+                hour = "f02400";
+            }
+
+            $("#imghero").attr("src", "https://weather.msfc.nasa.gov/sport/dynamic/hinduKushEnsemble/20190902/hkhEnsemble_20190902-1800_" + hour + "_" + which + ".gif");
+            $("#imghero").attr("alt", which);
+            $("#imghero").attr("title", which);
+            $('.dropdown-submenu .show').removeClass("show");
+            hideAllDD();
+        }
+    </script>
+</head>
+<body>
+    {% csrf_token %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">HIWAT Model Viewer</a>
+        <button type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbars" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+
+            <ul id="mymenu" class="navbar-nav  mr-auto"></ul>
+
+        </div>
+    </nav>
+    <br style="clear: both;">
+
+    <div class="container">
+        <!-- Content here -->
+
+        <p>
+            <img id="imghero" src="" alt="" title="" />
+        </p>
+    </div>
+</body>
+</html>

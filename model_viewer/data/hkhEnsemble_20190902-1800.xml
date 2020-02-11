@@ -1,0 +1,674 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Example model run configuration file
+  This file describes the variables necessary to dynamically configure a
+  model web page.
+-->
+<config>
+
+<!-- General configuration variables -->
+
+    <!--
+      Title for the web page
+    -->
+    <title>SPoRT-SERVIR 4-km Hindu Kush Himalayan WRF ensemble model runs</title>
+
+    <!--
+    Model Experiment Name, critical to filename construction
+    -->
+    <modelExperimentName>hkhEnsemble</modelExperimentName>
+
+    <!--
+      Length of model run in hours (supports fractional values)
+    -->
+    <forecastHours>48</forecastHours>
+
+    <!--
+    Forecast time interval in units of hours (e.g., use 0.5 for 30 minute)
+    -->
+    <forecastInterval>1</forecastInterval>
+
+    <!-- Completed forecast hours (supports fractional values) -->
+    <forecastHoursCompleted>48</forecastHoursCompleted>
+
+    <!-- Model data image type [ gif, jpg, png ] -->
+    <imageType>gif</imageType>
+
+<!--
+  User-defined notice. Remove text between "notice" tags if a  notice
+  message is not necessary. Example <notice></notice>
+-->
+
+    <notice>
+      The images displayed on this page are preliminary results solely for in-house use by SPoRT/SERVIR team members. 
+    </notice>
+
+<!--
+       Define categories and groups of model variables
+  Ensure that model variable names are not the same between the groups
+  as the variable names are the leading component of the filenames.
+
+  Define as many groups as needed and as many variables within groups as
+  necessary.
+
+  Filenames are structured as follows:
+      modelExperimentName_YYYYMMDD-HHMM_fHHHmm_variableName.png
+  where YYYYMMDD-HHMM is the fully qualified model initialization date
+  and time and fHHHmm represents the model forecast time in hours and
+  minutes.
+
+  User defines a default variable to display on page load. This variable
+  must match one of the variables provided in a category->group->variable
+
+  <defaultVariable>
+      <name>variableName as used in filename</name>
+  </defaultVariable>
+
+
+  Structure of a category is as follows:
+    <category>
+        <title>Title of the category</title>
+        <group>
+            <title>Title of the group</title>
+            <variable>
+                <name>variableName as used in filename</name>
+                <description>Description of the variable</description>
+            </variable>
+            .
+            .
+            .
+            <variable>
+                <name>variable N</name>
+                <description>Description of variable N</description>
+            </variable>
+        </group>
+    </category>
+-->
+
+    <defaultVariable>
+        <name>ensprob-lfa-thresh0.07-20km</name>
+    </defaultVariable>
+
+    <category>
+
+        <title>Min/Mean/Max/Spread</title>
+
+        <group>
+            <title>Ensemble Minimum</title>
+            <variable>
+                <name>ensmin-tmp2m</name>
+                <description>2m Temperature</description>
+            </variable>
+            <variable>
+                <name>ensmin-dpt2m</name>
+                <description>2m Dew Point Temperature</description>
+            </variable>
+            <variable>
+                <name>ensmin-prec6h</name>
+                <description>6h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmin-prec12h</name>
+                <description>12h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmin-prec24h</name>
+                <description>24h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmin-prectot</name>
+                <description>Total Accumulated Precipitation</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Ensemble Mean</title>
+            <variable>
+                <name>ensmean-tmp2m</name>
+                <description>2m Temperature</description>
+            </variable>
+            <variable>
+                <name>ensmean-dpt2m</name>
+                <description>2m Dew Point Temperature</description>
+            </variable>
+            <variable>
+                <name>ensmean-sbcape</name>
+                <description>Surface CAPE</description>
+            </variable>
+            <variable>
+                <name>ensmean-prec6h</name>
+                <description>6h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmean-prec12h</name>
+                <description>12h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmean-prec24h</name>
+                <description>24h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmean-prectot</name>
+                <description>Total Accumulated Precipitation</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Ensemble Max</title>
+            <variable>
+                <name>ensmax-tmp2m</name>
+                <description>2m Temperature</description>
+            </variable>
+            <variable>
+                <name>ensmax-dpt2m</name>
+                <description>2m Dew Point Temperature</description>
+            </variable>
+            <variable>
+                <name>ensmax-spd10m</name>
+                <description>10m Wind Speed</description>
+            </variable>
+            <variable>
+                <name>ensmax-sbcape</name>
+                <description>Surface CAPE</description>
+            </variable>
+            <variable>
+                <name>ensmax-prec1h</name>
+                <description>1h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmax-prec3h</name>
+                <description>3h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmax-prec6h</name>
+                <description>6h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmax-prec12h</name>
+                <description>12h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmax-prec24h</name>
+                <description>24h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmax-prectot</name>
+                <description>Total Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>ensmax-refc</name>
+                <description>Composite Reflectivity</description>
+            </variable>
+            <variable>
+                <name>ensmax-lfa</name>
+                <description>Total Lightning Flashes</description>
+            </variable>
+            <variable>
+                <name>ensmax-tcolg</name>
+                <description>Total Column Graupel</description>
+            </variable>
+            <variable>
+                <name>ensmax-uphlcy25</name>
+                <description>2-5km Updraft Helicity</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Ensemble Spread</title>
+            <variable>
+                <name>ensspread-tmp2m</name>
+                <description>2m Temperature</description>
+            </variable>
+            <variable>
+                <name>ensspread-dpt2m</name>
+                <description>2m Dew Point Temperature</description>
+            </variable>
+        </group>
+
+    </category>
+
+
+    <category>
+
+        <title>Postage Stamps</title>
+
+        <group>
+            <title>Surface Quantities</title>
+            <variable>
+                <name>enspostage-tmp2m</name>
+                <description>2m Temperature</description>
+            </variable>
+            <variable>
+                <name>enspostage-dpt2m</name>
+                <description>2m Dew Point Temperature</description>
+            </variable>
+            <variable>
+                <name>enspostage-sbcape</name>
+                <description>Surface CAPE</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Precipitation</title>
+            <variable>
+                <name>enspostage-prec24h</name>
+                <description>24h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>enspostage-prectot</name>
+                <description>Total Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>enspostage-refc</name>
+                <description>Composite Reflectivity</description>
+            </variable>
+            <variable>
+                <name>enspostage-lfa</name>
+                <description>Total Lightning Flashes</description>
+            </variable>
+        </group>
+
+    </category>
+
+
+    <category>
+
+        <title>Paintballs</title>
+
+        <group>
+            <title>10m Wind Speed</title>
+            <variable>
+                <name>enspaint-spd10m-thresh30</name>
+                <description>Greater Than 30 kt</description>
+            </variable>
+            <variable>
+                <name>enspaint-spd10m-thresh40</name>
+                <description>Greater Than 40 kt</description>
+            </variable>
+            <variable>
+                <name>enspaint-spd10m-thresh50</name>
+                <description>Greater Than 50 kt</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>1h Accumulated Precipitation</title>
+            <variable>
+                <name>enspaint-prec1h-thresh25</name>
+                <description>Greater Than 25 mm</description>
+            </variable>
+            <variable>
+                <name>enspaint-prec1h-thresh50</name>
+                <description>Greater Than 50 mm</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>3h Accumulated Precipitation</title>
+            <variable>
+                <name>enspaint-prec3h-thresh25</name>
+                <description>Greater Than 25 mm</description>
+            </variable>
+            <variable>
+                <name>enspaint-prec3h-thresh50</name>
+                <description>Greater Than 50 mm</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Composite Reflectivity</title>
+            <variable>
+                <name>enspaint-refc-thresh40</name>
+                <description>Greater Than 40 dBZ</description>
+            </variable>
+            <variable>
+                <name>enspaint-refc-thresh50</name>
+                <description>Greater Than 50 dBZ</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Total Lightning Flashes</title>
+            <variable>
+                <name>enspaint-lfa-thresh0.07</name>
+                <description>Greater Than 1 Flash/Hour</description>
+            </variable>
+            <variable>
+                <name>enspaint-lfa-thresh5</name>
+                <description>Greater Than 1 Flash/Minute</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Total Column Graupel</title>
+            <variable>
+                <name>enspaint-tcolg-thresh30</name>
+                <description>Greater Than 30 kg/m2</description>
+            </variable>
+            <variable>
+                <name>enspaint-tcolg-thresh40</name>
+                <description>Greater Than 40 kg/m2</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Updraft Helicity: 2-5km</title>
+            <variable>
+                <name>enspaint-uphlcy25-thresh50</name>
+                <description>Greater Than 50 m2/s2</description>
+            </variable>
+            <variable>
+                <name>enspaint-uphlcy25-thresh100</name>
+                <description>Greater Than 100 m2/s2</description>
+            </variable>
+            <variable>
+                <name>enspaint-uphlcy25-thresh200</name>
+                <description>Greater Than 200 m2/s2</description>
+            </variable>
+        </group>
+
+    </category>
+
+
+    <category>
+
+        <title>Probabilities</title>
+
+        <group>
+            <title>Probability Matched Mean</title>
+            <variable>
+                <name>enspmm-prec1h</name>
+                <description>1h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>enspmm-prec3h</name>
+                <description>3h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>enspmm-prec24h</name>
+                <description>24h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>enspmm-prectot</name>
+                <description>Total Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>enspmm-refc</name>
+                <description>Composite Reflectivity</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>2m Temperature</title>
+            <variable>
+                <name>ensprob-tmp2m-thresh32-0km</name>
+                <description>Greater Than 32 C</description>
+            </variable>
+            <variable>
+                <name>ensprob-tmp2m-thresh38-0km</name>
+                <description>Greater Than 38 C</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>2m Dew Point Temperature</title>
+            <variable>
+                <name>ensprob-dpt2m-thresh21-0km</name>
+                <description>Greater Than 21 C</description>
+            </variable>
+            <variable>
+                <name>ensprob-dpt2m-thresh26-0km</name>
+                <description>Greater Than 26 C</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>10m Wind Speed</title>
+            <variable>
+                <name>ensprob-spd10m-thresh30-20km</name>
+                <description>Greater Than 30 kt within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-spd10m-thresh40-20km</name>
+                <description>Greater Than 40 kt within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-spd10m-thresh50-20km</name>
+                <description>Greater Than 50 kt within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Surface CAPE</title>
+            <variable>
+                <name>ensprob-sbcape-thresh1000-0km</name>
+                <description>Greater Than 1000 J/kg</description>
+            </variable>
+            <variable>
+                <name>ensprob-sbcape-thresh2000-0km</name>
+                <description>Greater Than 2000 J/kg</description>
+            </variable>
+            <variable>
+                <name>ensprob-sbcape-thresh3000-0km</name>
+                <description>Greater Than 3000 J/kg</description>
+            </variable>
+            <variable>
+                <name>ensprob-sbcape-thresh4000-0km</name>
+                <description>Greater Than 4000 J/kg</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>1h Accumulated Precipitation</title>
+            <variable>
+                <name>ensprob-prec1h-thresh25-20km</name>
+                <description>Greater Than 25 mm within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-prec1h-thresh50-20km</name>
+                <description>Greater Than 50 mm within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>3h Accumulated Precipitation</title>
+            <variable>
+                <name>ensprob-prec3h-thresh25-20km</name>
+                <description>Greater Than 25 mm within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-prec3h-thresh50-20km</name>
+                <description>Greater Than 50 mm within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>6h Accumulated Precipitation</title>
+            <variable>
+                <name>ensprob-prec6h-thresh25-0km</name>
+                <description>Greater Than 25 mm</description>
+            </variable>
+            <variable>
+                <name>ensprob-prec6h-thresh50-0km</name>
+                <description>Greater Than 50 mm</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Composite Reflectivity</title>
+            <variable>
+                <name>ensprob-refc-thresh40-20km</name>
+                <description>Greater Than 40 dBZ within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-refc-thresh50-20km</name>
+                <description>Greater Than 50 dBZ within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Total Lightning Flashes</title>
+            <variable>
+                <name>ensprob-lfa-thresh0.07-20km</name>
+                <description>Greater Than 1 flash/hour within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-lfa-thresh5-20km</name>
+                <description>Greater Than 1 flash/min within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Total Column Graupel</title>
+            <variable>
+                <name>ensprob-tcolg-thresh30-20km</name>
+                <description>Greater Than 30 kg/m2 within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-tcolg-thresh40-20km</name>
+                <description>Greater Than 40 kg/m2 within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>2-5km Updraft Helicity</title>
+            <variable>
+                <name>ensprob-uphlcy25-thresh50-20km</name>
+                <description>Greater Than 50 m2/s2 within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-uphlcy25-thresh100-20km</name>
+                <description>Greater Than 100 m2/s2 within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-uphlcy25-thresh200-20km</name>
+                <description>Greater Than 200 m2/s2 within 20 km</description>
+            </variable>
+        </group>
+
+    </category>
+
+
+    <category>
+
+        <title>Summaries</title>
+
+        <group>
+            <title>Postage Stamps: Max for all hours</title>
+            <variable>
+                <name>enspostage-spd10m-max</name>
+                <description>10m Wind Speed</description>
+            </variable>
+            <variable>
+                <name>enspostage-refc-max</name>
+                <description>Composite Reflectivity</description>
+            </variable>
+            <variable>
+                <name>enspostage-prec3h-max</name>
+                <description>3h Accumulated Precipitation</description>
+            </variable>
+            <variable>
+                <name>enspostage-lfa-max</name>
+                <description>Total Lightning Flashes</description>
+            </variable>
+            <variable>
+                <name>enspostage-tcolg-max</name>
+                <description>Total Column Graupel</description>
+            </variable>
+            <variable>
+                <name>enspostage-uphlcy25-max</name>
+                <description>2-5km Updraft Helicity</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Max 10m Wind Speed Probability</title>
+            <variable>
+                <name>ensprob-spd10m-max-thresh30-20km</name>
+                <description>Greater Than 30 kt within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-spd10m-max-thresh40-20km</name>
+                <description>Greater Than 40 kt within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-spd10m-max-thresh50-20km</name>
+                <description>Greater Than 50 kt within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Max Composite Refl Probability</title>
+            <variable>
+                <name>ensprob-refc-max-thresh40-20km</name>
+                <description>Greater Than 40 dBZ within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-refc-max-thresh50-20km</name>
+                <description>Greater Than 50 dBZ within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Max 3h Precipitation Probability</title>
+            <variable>
+                <name>ensprob-prec3h-max-thresh25-20km</name>
+                <description>Greater Than 25 mm within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-prec3h-max-thresh50-20km</name>
+                <description>Greater Than 50 mm within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-prec3h-max-thresh75-20km</name>
+                <description>Greater Than 75 mm within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-prec3h-max-thresh100-20km</name>
+                <description>Greater Than 100 mm within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Max Total Ltg Flash Probability</title>
+            <variable>
+                <name>ensprob-lfa-max-thresh0.07-20km</name>
+                <description>Greater Than 1 flash/hour within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-lfa-max-thresh5-20km</name>
+                <description>Greater Than 1 flash/min within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Max Total Col Graupel Probability</title>
+            <variable>
+                <name>ensprob-tcolg-max-thresh30-20km</name>
+                <description>Greater Than 30 kg/m2 within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-tcolg-max-thresh40-20km</name>
+                <description>Greater Than 40 kg/m2 within 20 km</description>
+            </variable>
+        </group>
+
+        <group>
+            <title>Max 2-5km Updr Helicity Probability</title>
+            <variable>
+                <name>ensprob-uphlcy25-max-thresh50-20km</name>
+                <description>Greater Than 50 m2/s2 within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-uphlcy25-max-thresh100-20km</name>
+                <description>Greater Than 100 m2/s2 within 20 km</description>
+            </variable>
+            <variable>
+                <name>ensprob-uphlcy25-max-thresh200-20km</name>
+                <description>Greater Than 200 m2/s2 within 20 km</description>
+            </variable>
+        </group>
+
+    </category>
+
+</config>
