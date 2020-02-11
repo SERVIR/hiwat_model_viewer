@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import os
 import json
 import requests
 import xmltodict
@@ -9,6 +10,12 @@ import xmltodict
 
 @csrf_exempt
 def getjson(request):
+    baseLocation = "/home/bashmall/fake_mnt/hiwat/hkh/image_files"
+    latestdir = str(sorted(os.listdir(baseLocation), reverse=True)[0])
+    file = open(os.path.join(baseLocation ,
+                        latestdir,
+                        'ens',
+                        'hkhEnsemble_' + latestdir[:-2] + '-1800.xml'))
 
-    file = requests.get('https://location.servirglobal.net/hkhEnsemble_20190902-1800.xml', verify=False)
-    return JsonResponse(json.dumps(xmltodict.parse(file.content)), safe=False)
+
+    return JsonResponse(json.dumps(xmltodict.parse(file.read())), safe=False)
