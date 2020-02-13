@@ -6,5 +6,6 @@ from . import views
 
 urlpatterns = [
     path('ajax/getjson', views.getjson, name='getjson'), 
+    path('ajax/getimage', views.getimage, name='getimage'),
     url('', TemplateView.as_view(template_name="model_viewer/index.html"), name='index'),
 ]

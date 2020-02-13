@@ -1,0 +1,435 @@
+//Global Variables
+var replaceMarker = 0;
+var currentDate = "20190902";
+var dataset = "hkhEnsemble";
+var pastDate = "20180301";
+var webModelPath = "/sport/dynamic/hinduKushEnsemble";
+var fruit = "";
+var initialTime = "1800";
+var linkNames = "Deterministic Runs";
+var links = "/cgi-bin/sportPublishModel.pl?dataset=hkhControl";
+var navTitle = "Links";
+var pageTitle = "";
+var xmlProduct = "hkhEnsemble";
+var xmlFile = "hkhEnsemble_20190902-1800.xml";
+var n; //Used to pass pname into pageCreate()
+var htmlText = "";//Initialze text to write menu HTML
+var initialTime; //Initialization Time
+var forecastHours; //Number of hours model is run
+var forecastInterval, modelName; //Model period, name of model
+var flList; //For list of forecast hours (i.e. fHHHMM)
+var dateSelected;
+var timeoutID = null;//Initalized timeout setting
+var syncStatus = false;//For racing issue between slider and ajax
+var looperSpeed = 500;//Intial speed of animation
+var resetSpeed = 500;//Reset to initial speed
+var currentSelection;
+var disableddates = ["20190505", "20190504", "20190503"]
+var pname, fileType;
+
+
+
+var currentDate = "";
+var currentIsSummary = false;
+var initialTime = "";
+$(document).ready(function () {
+    $.ajax({
+        url: "ajax/getjson",
+        type: 'GET',
+        success: function (result) {
+            loadData(result);
+            $("#datepicker").datepicker("setDate", getFormattedDate(currentDate).substring(0, 10));
+        }
+    });
+    $("#datepicker").datepicker({//Code handling date picker UI
+        changeMonth: true,
+        changeYear: true,
+        defaultDate: 0,
+        showOn: "button",
+        buttonImage: "https://jqueryui.com/resources/demos/datepicker/images/calendar.gif",
+        buttonImageOnly: true,
+        buttonText: "Select Date",
+        beforeShowDay: DisableSpecificDates,
+        dateFormat: "yymmdd",
+        minDate: "20190502",//Earliest Date in DIR
+        maxDate: "20190506",//Current Date in DIR
+        onSelect: function (dateText, instance) {
+            loadDate(dateText + "18");
+        }
+    });
+});
+
+function DisableSpecificDates(date) {//Disables certain dates in datepicker calendar
+    var string = jQuery.datepicker.formatDate('yymmdd', date);
+    return [disableddates.indexOf(string) == -1];
+}
+
+//*********yyyymmddhh - "2019050218" ****//
+function loadDate(which) {
+    $.ajax({
+        url: "ajax/getjson",
+        type: 'GET',
+        data: { "initdate": which },
+        success: function (result) {
+            loadData(result);
+        }
+    });
+}
+
+function loadData(result) {
+
+    var data = JSON.parse(result);
+    var imageLoaded = false;
+    var getMenuItem = function (itemData, isVariable, isSummaries) {
+        if (!isSummaries) {
+            var isSummaries = itemData.title == "Summaries" ? true : false;
+        }
+        var cssClass = "nav-item dropdown";
+        var style = "";
+        var role = "";
+        var datatoggle = "";
+        var ariahaspopup = false;
+        var ariaexpanded = false;
+        var acss = "dropdown-item";
+        var item = $("<li>", { "class": cssClass })
+        if (!itemData.group) {
+
+            cssClass = "dropdown-submenu";
+        } else {
+            var hideAllDDOnClick = true;
+        }
+        if (!isVariable) {
+            acss = "nav-link dropdown-toggle";
+            role = "button";
+            datatoggle = "dropdown";
+            ariahaspopup = "true";
+            ariaexpanded = "false";
+            if (hideAllDDOnClick) {
+                item.append(
+                    $("<a>", {
+                        id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
+                        href: '#',
+                        html: itemData.title ? itemData.title : itemData.name,
+                        "class": acss,
+                        role: role,
+                        "aria-haspopup": ariahaspopup,
+                        "aria-expanded": ariaexpanded,
+                        "data-toggle": datatoggle,
+                        onclick: hideAllDD,
+                    }));
+            } else {
+                item.append(
+                    $("<a>", {
+                        id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
+                        href: '#',
+                        html: itemData.title ? itemData.title : itemData.name,
+                        "class": acss,
+                        role: role,
+                        "aria-haspopup": ariahaspopup,
+                        "aria-expanded": ariaexpanded,
+                        "data-toggle": datatoggle,
+                    }));
+            }
+        } else {
+            item.append(
+                $("<a>", {
+                    id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
+                    href: '#',
+                    html: itemData.title ? itemData.title : itemData.name,
+                    "class": acss,
+                    role: role,
+                }));
+        }
+
+        if (isVariable) {
+            if (isSummaries) {
+                if (!imageLoaded) {
+                    if (currentIsSummary) {
+                        if (currentSelection) {
+                            imageLoaded = true;
+                            loadImage(currentSelection, true);
+                        } else {
+                            loadImage(itemData.name, true);
+                        }
+                    }
+                }
+                item.on({
+                    'click': function () {
+                        loadImage(itemData.name, true);
+                    }
+                });
+            } else {
+                if (!imageLoaded) {
+                    if (!currentIsSummary) {
+                        if (currentSelection) {
+                            loadImage(currentSelection);
+                            imageLoaded = true;
+                        } else {
+                            loadImage(itemData.name);
+                            imageLoaded = true;
+                        }
+                    }
+                }
+                item.on({
+                    'click': function () {
+                        loadImage(itemData.name);
+                    }
+                });
+            }
+        }
+        if (itemData.group) {
+            var labelledby = (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_");
+            var subList = $("<ul>", {
+                "class": "dropdown-menu border-0 shadow",
+                "aria-labelledby": labelledby
+            });
+            $.each(itemData.group, function () {
+                subList.append(getMenuItem(this, false, isSummaries));
+            });
+            item.append(subList);
+        }
+        if (itemData.variable) {
+            var labelledby = (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_");
+            var subList = $("<ul>", {
+                "class": "dropdown-menu border-0 shadow",
+                "aria-labelledby": labelledby
+            });
+            $.each(itemData.variable, function () {
+                subList.append(getMenuItem(this, true, isSummaries));
+            });
+            item.append(subList);
+        }
+        return item;
+    };
+
+    var $menu = $("#mymenu");
+    forecastHours = data.config.forecastHours;
+    forecastInterval = data.config.forecastInterval;
+    pname = data.config.defaultVariable.name;
+    modelName = data.config.modelExperimentName;
+    fileType = data.config.imageType;
+    currentDate = data.config.init.substring(0, 8);
+    initialTime = data.config.init.substring(8);
+    $("#txtinit").text(getFormattedDate(data.config.init));
+    $menu.empty();
+    $.each(data.config.category, function () {
+        $menu.append(
+            getMenuItem(this)
+        );
+    });
+    loadLevels();
+    loadSlider();
+
+}
+
+function getFormattedDate(str) {
+    return str.substring(0, 4) + "/" + str.substring(4, 6) + "/" + str.substring(6, 8) + " : " + str.substring(8) + "00";
+}
+
+function loadLevels() {
+    // ------------------------------------------------------- //
+    // Multi Level dropdowns
+    // ------------------------------------------------------ //
+    $("ul.dropdown-menu [data-toggle='dropdown']").on("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $(this).siblings().toggleClass("show");
+        if (!$(this).next().hasClass('show')) {
+            $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
+        }
+        $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function (e) {
+            $('.dropdown-submenu .show').removeClass("show");
+        });
+    });
+    $("#mymenu > li > a").on("click", hideAllDD);
+}
+
+function hideAllDD() {
+    $('.dropdown-menu .show').removeClass("show");
+}
+
+function loadImage(which, isSummaries) {
+    //ensmin-tmp2m
+    //https://weather.msfc.nasa.gov/sport/dynamic/hinduKushEnsemble/20190902/hkhEnsemble_20190902-1800_f00100_ensmin-tmp2m.gif
+    var hour = "f00100";
+    if (which.indexOf("6h") > -1) {
+        hour = "f00600";
+    } else if (which.indexOf("12h") > -1) {
+        hour = "f01200";
+    } else if (isSummaries || which.indexOf("24h") > -1) {
+        hour = "f02400";
+    }
+    currentSelection = which;
+    currentIsSummary = isSummaries;
+    var qParameter = "imagename="
+        + currentDate + initialTime
+        + "/ens"
+        + "/hkhEnsemble_"
+        + currentDate
+        + "-"
+        + initialTime
+        + "00_"
+        + hour
+        + "_"
+        + which
+        + ".gif";
+    $("#imghero").attr("src",
+        "https://hmv.servirglobal.net/ajax/getimage?" + qParameter);
+    $("#imghero").attr("alt", which);
+    $("#imghero").attr("title", which);
+    $('.dropdown-submenu .show').removeClass("show");
+    hideAllDD();
+}
+
+function loadSlider() {
+    var handle = $("#custom-handle");
+    $("#forecastSlider").slider({
+        min: 0,
+        max: (100), //(loopImages.length - 1),//duration/interval,// + 1,
+        step: 1,
+        create: function () {//Done during slider creation
+            handle.text(100); //newmodelTimes[$( this ).slider( "value" )] );
+        },
+        slide: function (event, ui) {//Done when slider is moved by user
+            handle.text(90); //newmodelTimes[ui.value] );
+            // Following line is for debugging file times only
+            //$("#fileInfo").html(fileTimes[ui.value]);
+            $("#fileInfo").html(90); //loopImages[ui.value]);
+            //document.getElementById("loader").style.display = "none";//Turn off loading animation
+            //document.getElementById("myImg").style.opacity="1";//Bring image into focus
+            // showImage(ui.value);
+        },
+        change: function (event, ui) {//Done when slider is changed programmatically
+            handle.text("new"); //newmodelTimes[ui.value] );
+            $("#fileInfo").html("wow"); //loopImages[ui.value]);
+            //document.getElementById("loader").style.display = "none";
+            //document.getElementById("myImg").style.opacity="1";
+            //showImage(ui.value);
+        }
+    });
+}
+
+// Determine the model times for the slider and for the file names
+function calculateModelTimes(duration, interval) {
+    var baseTime = 60;  // one hour or 60 minutes
+    duration = parseInt(duration);//Needs to be a number, not a string
+    interval = parseFloat(interval);//Needs to be a number, not a string
+    var modelStep = baseTime * interval;
+    var durationLength = duration / interval + 1;
+
+    // Create arrays to hold the time strings for the slider and for
+    // the filenames that will be generated
+    var sliderString = [];
+    var fileString = [];
+
+    // All model runs have forecast starting at 0 hours, 0 minutes
+    var hour = 0;
+    var minutes = 0;
+
+    // Fix if padStart isn't natively available i.e. EDGE browser
+    if (!String.prototype.padStart) {
+        String.prototype.padStart = function padStart(targetLength, padString) {
+            targetLength = targetLength >> 0; //truncate if number or convert non-number to 0;
+            padString = String((typeof padString !== 'undefined' ? padString : ' '));
+            if (this.length > targetLength) {
+                return String(this);
+            }
+            else {
+                targetLength = targetLength - this.length;
+                if (targetLength > padString.length) {
+                    padString += padString.repeat(targetLength / padString.length); //append to original to ensure we are longer than needed
+                }
+                return padString.slice(0, targetLength) + String(this);
+            }
+        };
+    }
+
+    // Create the time string arrays each formatted differently
+    for (var i = 0; i < durationLength; i++) {
+
+        var minuteString = minutes.toString().padStart(2, "0");
+        sliderString[i] = "f" + hour.toString().padStart(3, "0");//Add "f" to the forecast times
+        fileString[i] = "f" + hour.toString().padStart(3, "0") + minuteString;
+        if (interval < 1) {//Add a min separator (:) for sub-hour data
+            sliderString[i] += ":" + minuteString;
+            minutes += modelStep;
+            if (minutes >= 60) {
+                minutes = 0;
+                hour += 1;
+            }
+        } else {
+            hour += interval;
+        }
+    }
+    // Return the two arrays as objects
+    return { sliderInfo: sliderString, fileInfo: fileString };
+}
+
+function initializeSlider() {
+    // The following variables will be provided based on the XML configuration
+    var duration = forecastHours;
+    var interval = forecastInterval;  // Fractional hour
+    var initializationTime = initialTime;
+    // End XML configuration parameters
+
+    // obtain an object with timeStrings
+    var timeStrings = calculateModelTimes(duration, interval);
+    // Extract the object elements (arrays)
+    modelTimes = timeStrings.sliderInfo;
+    var fileTimes = timeStrings.fileInfo;
+    flList = timeStrings.fileInfo;
+    mdList = timeStrings.sliderInfo;
+    flLength = flList.length;
+    createFileList();
+    newmodelTimes = newmodelTimes.sort();
+    loopImages = loopImages.sort();
+    //syncSlider();
+}
+
+function createFileList() {
+    nameList = [];//To be used to get list of filenames
+    var k;
+    var i;
+    var item;
+    var myxhr;
+    var b;
+    stopPoint = (flLength - 1);
+    sliderStatus = false;
+    loopImages = [];
+    errorImages = [];
+    newmodelTimes = [];
+    var nameFile;
+    for (var k = 0; k < flList.length; k++) {
+        nameList.push(webModelPath + '/' + currentDate + '/' + modelName + '_' + currentDate + '-' + initialTime + '_' + flList[k] + '_' + pname + '.' + fileType);
+    };
+    //Check to see what files are available and add them to loopImages and newmodelTimes Lists
+    $.each(nameList, function (i, item) {
+        myxhr = new XMLHttpRequest();
+        myxhr.open("GET", item, true);
+        myxhr.send(item);
+        myxhr.onreadystatechange = function () {
+            if (i < stopPoint) {
+                if (this.readyState == 4 && this.status == 404) {//Missing File				
+                    errorImages.push(item);
+                } else if (this.readyState == 4 && this.status == 200) {//File exists
+                    loopImages.push(item);
+                    newmodelTimes.push(mdList[i]);
+                };
+            } else {//What to do with the last file
+                if (this.readyState == 4 && this.status == 200) {
+                    loopImages.push(item);
+                    newmodelTimes.push(mdList[i]);
+                    loopImages = loopImages.sort();
+                    newmodelTimes = newmodelTimes.sort();
+                    sliderStatus = true;
+                } else if (this.readyState == 4 && this.status == 404) {
+                    errorImages.push(item);
+                    loopImages.sort();
+                    loopImages = loopImages.sort();
+                    newmodelTimes = newmodelTimes.sort();
+                    sliderStatus = true;
+                }
+            };
+        }
+    });
+}
