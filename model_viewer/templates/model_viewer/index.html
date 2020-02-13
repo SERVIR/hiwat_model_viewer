@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="{% static 'model_viewer/style.css' %}" type="text/css">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -54,6 +55,28 @@
                 <div id="forecastSlider"><br>
                     <div id="custom-handle" class="ui-slider-handle"></div>&nbsp;&nbsp;&nbsp;&nbsp;<br>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 tcenter">
+                <div onclick="firstImage()" class="btn btn-default"><i class="fa fa-fast-backward"
+                        style="color:#337ab7;"></i></div>
+                <div onclick="prevImage()" class="btn btn-default"><i class="fa fa-backward" style="color:#337ab7;"></i>
+                </div>
+                <div onclick="pauseLooper()" class="btn btn-default"><i class="fa fa-stop" style="color:#337ab7;"></i>
+                </div>
+                <div onclick="slideLooper()" class="btn btn-default"><i class="fa fa-play" style="color:#337ab7;"></i>
+                </div>
+                <div onclick="nextImage()" class="btn btn-default"><i class="fa fa-forward" style="color:#337ab7;"></i>
+                </div>
+                <div onclick="lastImage()" class="btn btn-default"><i class="fa fa-fast-forward"
+                        style="color:#337ab7;"></i></div>
+
+                <div onclick="speedDown()" class="btn btn-default"><i class="fa fa-arrow-down"
+                        style="color:#337ab7;"></i></div>
+                <div onclick="speedUp()" class="btn btn-default"><i class="fa fa-arrow-up" style="color:#337ab7;"></i>
+                </div>
+
             </div>
         </div>
     </div>

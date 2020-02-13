@@ -32,5 +32,8 @@ def getjson(request):
 def getimage(request):
     image_name = request.GET.get("imagename")
     baseLocation = "/mnt/hiwat/hkh/image_files/"
-    image_data = open(baseLocation + image_name, "rb").read()
+    try:
+        image_data = open(baseLocation + image_name, "rb").read()
+    except:
+        return HttpResponse(status=204)
     return HttpResponse(image_data, content_type="image/gif")

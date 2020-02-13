@@ -3,7 +3,7 @@ var replaceMarker = 0;
 var currentDate = "20190902";
 var dataset = "hkhEnsemble";
 var pastDate = "20180301";
-var webModelPath = "/sport/dynamic/hinduKushEnsemble";
+var webModelPath = "/ajax/getimage?"; //"/sport/dynamic/hinduKushEnsemble";
 var fruit = "";
 var initialTime = "1800";
 var linkNames = "Deterministic Runs";
@@ -39,6 +39,7 @@ $(document).ready(function () {
         success: function (result) {
             loadData(result);
             $("#datepicker").datepicker("setDate", getFormattedDate(currentDate).substring(0, 10));
+            //initHandleVal();
         }
     });
     $("#datepicker").datepicker({//Code handling date picker UI
@@ -156,6 +157,8 @@ function loadData(result) {
                 item.on({
                     'click': function () {
                         loadImage(itemData.name, true);
+                        initializeSlider();
+                        loadSlider();
                     }
                 });
             } else {
@@ -173,6 +176,8 @@ function loadData(result) {
                 item.on({
                     'click': function () {
                         loadImage(itemData.name);
+                        initializeSlider();
+                        loadSlider();
                     }
                 });
             }
@@ -218,12 +223,90 @@ function loadData(result) {
         );
     });
     loadLevels();
+    initializeSlider();
     loadSlider();
-
+}
+var myTimeOut;
+function initHandleVal() {
+    clearTimeout(myTimeOut);
+    if (newmodelTimes[$("#forecastSlider").slider("value")]) {
+        $("#custom-handle").text(newmodelTimes[$("#forecastSlider").slider("value")]);
+    } else {
+        myTimeOut = setTimeout(initHandleVal, 200);
+    }
 }
 
 function getFormattedDate(str) {
     return str.substring(0, 4) + "/" + str.substring(4, 6) + "/" + str.substring(6, 8) + " : " + str.substring(8) + "00";
+}
+
+function showImage(i) {
+    document.getElementById("imghero").src = loopImages[i];
+};
+
+//Used to speed up animations from speed up button
+function speedUp() {
+    if (looperSpeed > 125) {
+        looperSpeed = looperSpeed / 2;
+    };
+};
+
+//Used to slow down animations from speed down button    
+function speedDown() {
+    if (looperSpeed < 1000) {
+        looperSpeed = looperSpeed * 2;
+    };
+};
+
+//Displays the first image in the array from the first button
+function firstImage() {
+    $("#forecastSlider").slider("option", "value", 0);
+};
+
+//Displays the last image in the array from the last button 
+function lastImage() {
+    $("#forecastSlider").slider("option", "value", (flLength - 1));
+};
+
+//Steps through the image list to the next one temporally
+function nextImage() {
+    var handle = $("#custom-handle");
+    var fSlider = $("#forecastSlider");
+    var valCheck = fSlider.slider('value');
+    fSlider.slider('value', fSlider.slider('value') + fSlider.slider("option", "step"));
+    if (valCheck >= (loopImages.length - 1)) {//Reaches the end of the list
+        $("#forecastSlider").slider("option", "value", 0);
+    }
+};
+
+//Steps through the image list to the previous one temporally
+function prevImage() {
+    var handle = $("#custom-handle");
+    var fSlider = $("#forecastSlider");
+    var valCheck = fSlider.slider('value');
+    fSlider.slider('value', fSlider.slider('value') - fSlider.slider("option", "step"));
+    if (valCheck == (0)) {//Reaches the beginning of the list
+        $("#forecastSlider").slider("option", "value", (loopImages.length - 1));
+    }
+};
+
+
+//Starts animation when play button is pressed
+function slideLooper() {
+    var handle = $("#custom-handle");
+    var fSlider = $("#forecastSlider");
+    var valCheck = fSlider.slider('value');
+    fSlider.slider('value', fSlider.slider('value') + fSlider.slider("option", "step"));
+    if (valCheck >= (loopImages.length - 1)) {
+        $("#forecastSlider").slider("option", "value", 0);
+    }
+    timeoutId = setTimeout("slideLooper()", looperSpeed);
+}
+
+//Stops animation when stop button is pressed
+function pauseLooper() {
+    clearTimeout(timeoutId);
+    looperSpeed = resetSpeed;
 }
 
 function loadLevels() {
@@ -285,26 +368,26 @@ function loadSlider() {
     var handle = $("#custom-handle");
     $("#forecastSlider").slider({
         min: 0,
-        max: (100), //(loopImages.length - 1),//duration/interval,// + 1,
+        max: (loopImages.length - 1),//duration/interval,// + 1,
         step: 1,
         create: function () {//Done during slider creation
-            handle.text(100); //newmodelTimes[$( this ).slider( "value" )] );
+            handle.text(newmodelTimes[$(this).slider("value")]);
         },
         slide: function (event, ui) {//Done when slider is moved by user
-            handle.text(90); //newmodelTimes[ui.value] );
+            handle.text(newmodelTimes[ui.value]);
             // Following line is for debugging file times only
             //$("#fileInfo").html(fileTimes[ui.value]);
-            $("#fileInfo").html(90); //loopImages[ui.value]);
+            //$("#fileInfo").html(loopImages[ui.value]);
             //document.getElementById("loader").style.display = "none";//Turn off loading animation
             //document.getElementById("myImg").style.opacity="1";//Bring image into focus
-            // showImage(ui.value);
+            showImage(ui.value);
         },
         change: function (event, ui) {//Done when slider is changed programmatically
-            handle.text("new"); //newmodelTimes[ui.value] );
-            $("#fileInfo").html("wow"); //loopImages[ui.value]);
+            handle.text(newmodelTimes[ui.value]);
+            //$("#fileInfo").html(loopImages[ui.value]);
             //document.getElementById("loader").style.display = "none";
             //document.getElementById("myImg").style.opacity="1";
-            //showImage(ui.value);
+            showImage(ui.value);
         }
     });
 }
@@ -400,7 +483,7 @@ function createFileList() {
     newmodelTimes = [];
     var nameFile;
     for (var k = 0; k < flList.length; k++) {
-        nameList.push(webModelPath + '/' + currentDate + '/' + modelName + '_' + currentDate + '-' + initialTime + '_' + flList[k] + '_' + pname + '.' + fileType);
+        nameList.push(webModelPath + 'imagename=' + currentDate + initialTime + '/ens/' + modelName + '_' + currentDate + '-' + initialTime + '00_' + flList[k] + '_' + currentSelection + '.' + fileType);
     };
     //Check to see what files are available and add them to loopImages and newmodelTimes Lists
     $.each(nameList, function (i, item) {
@@ -429,7 +512,11 @@ function createFileList() {
                     newmodelTimes = newmodelTimes.sort();
                     sliderStatus = true;
                 }
+                console.log(loopImages.length);
+                loadSlider();
+                initHandleVal();
             };
         }
     });
+
 }

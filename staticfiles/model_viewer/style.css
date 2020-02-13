@@ -2,6 +2,17 @@
     max-width:100%;
 }
 
+.tcenter {
+    padding: 10px;
+    text-align:center;
+}
+
+.btn {
+        cursor: pointer;
+        border: 1px solid #3277b2;
+    box-shadow: 2px 2px 5px silver;
+}
+
 .dropdown-submenu {
     position: relative;
 }
