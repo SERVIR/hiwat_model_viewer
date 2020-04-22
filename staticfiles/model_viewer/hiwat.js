@@ -1,19 +1,11 @@
 //Global Variables
-var replaceMarker = 0;
 var currentDate = "20190902";
 var dataset = "hkhEnsemble";
 var pastDate = "20180301";
-var webModelPath = "/ajax/getimage?"; //"/sport/dynamic/hinduKushEnsemble";
-var fruit = "";
+var webModelPath = "/ajax/getimage?";
 var initialTime = "1800";
-var linkNames = "Deterministic Runs";
-var links = "/cgi-bin/sportPublishModel.pl?dataset=hkhControl";
-var navTitle = "Links";
-var pageTitle = "";
-var xmlProduct = "hkhEnsemble";
-var xmlFile = "hkhEnsemble_20190902-1800.xml";
-var n; //Used to pass pname into pageCreate()
-var htmlText = "";//Initialze text to write menu HTML
+var forecastType = "ens";
+var forecastprefix = "hkhEnsemble_";
 var initialTime; //Initialization Time
 var forecastHours; //Number of hours model is run
 var forecastInterval, modelName; //Model period, name of model
@@ -24,40 +16,235 @@ var syncStatus = false;//For racing issue between slider and ajax
 var looperSpeed = 500;//Intial speed of animation
 var resetSpeed = 500;//Reset to initial speed
 var currentSelection;
-var disableddates = ["20190505", "20190504", "20190503"]
+var disableddates = ["20190505", "20190504", "20190503", "20190901"
+    , "20190902"
+    , "20190903"
+    , "20190904"
+    , "20190905"
+    , "20190906"
+    , "20190907"
+    , "20190908"
+    , "20190909"
+    , "20190910"
+    , "20190911"
+    , "20190912"
+    , "20190913"
+    , "20190914"
+    , "20190915"
+    , "20190916"
+    , "20190917"
+    , "20190918"
+    , "20190919"
+    , "20190920"
+    , "20190921"
+    , "20190922"
+    , "20190923"
+    , "20190924"
+    , "20190925"
+    , "20190926"
+    , "20190927"
+    , "20190928"
+    , "20190929"
+    , "20190930"
+    , "20191001"
+    , "20191002"
+    , "20191003"
+    , "20191004"
+    , "20191005"
+    , "20191006"
+    , "20191007"
+    , "20191008"
+    , "20191009"
+    , "20191010"
+    , "20191011"
+    , "20191012"
+    , "20191013"
+    , "20191014"
+    , "20191015"
+    , "20191016"
+    , "20191017"
+    , "20191018"
+    , "20191019"
+    , "20191020"
+    , "20191021"
+    , "20191022"
+    , "20191023"
+    , "20191024"
+    , "20191025"
+    , "20191026"
+    , "20191027"
+    , "20191028"
+    , "20191029"
+    , "20191030"
+    , "20191031"
+    , "20191101"
+    , "20191102"
+    , "20191103"
+    , "20191104"
+    , "20191105"
+    , "20191106"
+    , "20191107"
+    , "20191108"
+    , "20191109"
+    , "20191110"
+    , "20191111"
+    , "20191112"
+    , "20191113"
+    , "20191114"
+    , "20191115"
+    , "20191116"
+    , "20191117"
+    , "20191118"
+    , "20191119"
+    , "20191120"
+    , "20191121"
+    , "20191122"
+    , "20191123"
+    , "20191124"
+    , "20191125"
+    , "20191126"
+    , "20191127"
+    , "20191128"
+    , "20191129"
+    , "20191130"
+    , "20191201"
+    , "20191202"
+    , "20191203"
+    , "20191204"
+    , "20191205"
+    , "20191206"
+    , "20191207"
+    , "20191208"
+    , "20191209"
+    , "20191210"
+    , "20191211"
+    , "20191212"
+    , "20191213"
+    , "20191214"
+    , "20191215"
+    , "20191216"
+    , "20191217"
+    , "20191218"
+    , "20191219"
+    , "20191220"
+    , "20191221"
+    , "20191222"
+    , "20191223"
+    , "20191224"
+    , "20191225"
+    , "20191226"
+    , "20191227"
+    , "20191228"
+    , "20191229"
+    , "20191230"
+    , "20191231"
+    , "20200101"
+    , "20200102"
+    , "20200103"
+    , "20200104"
+    , "20200105"
+    , "20200106"
+    , "20200107"
+    , "20200108"
+    , "20200109"
+    , "20200110"
+    , "20200111"
+    , "20200112"
+    , "20200113"
+    , "20200114"
+    , "20200115"
+    , "20200116"
+    , "20200117"
+    , "20200118"
+    , "20200119"
+    , "20200120"
+    , "20200121"
+    , "20200122"
+    , "20200123"
+    , "20200124"
+    , "20200125"
+    , "20200126"
+    , "20200127"
+    , "20200128"
+    , "20200129"
+    , "20200130"
+    , "20200131"
+    , "20200201"
+    , "20200202"
+    , "20200203"
+    , "20200204"
+    , "20200205"
+    , "20200207"
+    , "20200208"
+    , "20200209"
+    , "20200210"
+    , "20200211"
+    , "20200212"
+    , "20200213"
+    , "20200214"
+
+]
 var pname, fileType;
-
-
-
 var currentDate = "";
 var currentIsSummary = false;
 var initialTime = "";
-$(document).ready(function () {
+
+function setForecast(which) {
+    if (which === "ens") {
+        forecastType = "ens";
+        forecastprefix = "hkhEnsemble_";
+    } else if (which === "det") {
+        forecastType = "det"; //"ens"
+        forecastprefix = "hkhControl_"; //"hkhEnsemble_"
+    }
+    currentSelection = null;
+    getDocument();
+}
+
+function toggleForecast(isDet) {
+    $('#cover').show();
+    if (isDet) {
+        setForecast("det");
+    } else {
+        setForecast("ens");
+    }
+}
+
+function getDocument() {
     $.ajax({
         url: "ajax/getjson",
         type: 'GET',
+        data: { "forecasttype": forecastType },
         success: function (result) {
             loadData(result);
             $("#datepicker").datepicker("setDate", getFormattedDate(currentDate).substring(0, 10));
             //initHandleVal();
         }
     });
+}
+
+function completeDatePicker(early, late) {
     $("#datepicker").datepicker({//Code handling date picker UI
         changeMonth: true,
         changeYear: true,
         defaultDate: 0,
         showOn: "button",
-        buttonImage: "https://jqueryui.com/resources/demos/datepicker/images/calendar.gif",
+        buttonImage: "https://hmv.servirglobal.net/static/model_viewer/calendar.jpg",
         buttonImageOnly: true,
         buttonText: "Select Date",
         beforeShowDay: DisableSpecificDates,
         dateFormat: "yymmdd",
-        minDate: "20190502",//Earliest Date in DIR
-        maxDate: "20190506",//Current Date in DIR
+        minDate: early, //"20190502",//Earliest Date in DIR
+        maxDate: late, //"20190506",//Current Date in DIR
         onSelect: function (dateText, instance) {
-            loadDate(dateText + "18");
+            loadDate(dateText + initialTime);
         }
     });
+}
+
+$(document).ready(function () {
+    getDocument();
+
 });
 
 function DisableSpecificDates(date) {//Disables certain dates in datepicker calendar
@@ -70,7 +257,10 @@ function loadDate(which) {
     $.ajax({
         url: "ajax/getjson",
         type: 'GET',
-        data: { "initdate": which },
+        data: {
+            "initdate": which,
+            "forecasttype": forecastType
+        },
         success: function (result) {
             loadData(result);
         }
@@ -136,7 +326,7 @@ function loadData(result) {
                 $("<a>", {
                     id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
                     href: '#',
-                    html: itemData.title ? itemData.title : itemData.name,
+                    html: itemData.title ? itemData.title : itemData.description,
                     "class": acss,
                     role: role,
                 }));
@@ -156,6 +346,9 @@ function loadData(result) {
                 }
                 item.on({
                     'click': function () {
+                        $('#cover').show();
+                        pauseLooper();
+                        firstImage();
                         loadImage(itemData.name, true);
                         initializeSlider();
                         loadSlider();
@@ -168,13 +361,18 @@ function loadData(result) {
                             loadImage(currentSelection);
                             imageLoaded = true;
                         } else {
-                            loadImage(itemData.name);
-                            imageLoaded = true;
+                            if (data.config.defaultVariable.name == itemData.name) {
+                                loadImage(itemData.name);
+                                imageLoaded = true;
+                            }
                         }
                     }
                 }
                 item.on({
                     'click': function () {
+                        $('#cover').show();
+                        pauseLooper();
+                        firstImage();
                         loadImage(itemData.name);
                         initializeSlider();
                         loadSlider();
@@ -215,6 +413,7 @@ function loadData(result) {
     fileType = data.config.imageType;
     currentDate = data.config.init.substring(0, 8);
     initialTime = data.config.init.substring(8);
+    completeDatePicker(data.config.earliest.substring(0, 8), data.config.latest.substring(0, 8));
     $("#txtinit").text(getFormattedDate(data.config.init));
     $menu.empty();
     $.each(data.config.category, function () {
@@ -222,10 +421,23 @@ function loadData(result) {
             getMenuItem(this)
         );
     });
+
     loadLevels();
     initializeSlider();
     loadSlider();
+
+    var item = $("<li>", { "class": "nav-item" });
+    var link = $("<a/>", { class: "nav-link", html: "Info", style: "cursor:pointer" });
+    link.click(function () { openInfo() });
+
+    item.append(link)
+    $menu.append(item);
 }
+
+function openInfo() {
+    $('#mymodal').modal();
+}
+
 var myTimeOut;
 function initHandleVal() {
     clearTimeout(myTimeOut);
@@ -274,7 +486,7 @@ function nextImage() {
     var fSlider = $("#forecastSlider");
     var valCheck = fSlider.slider('value');
     fSlider.slider('value', fSlider.slider('value') + fSlider.slider("option", "step"));
-    if (valCheck >= (loopImages.length - 1)) {//Reaches the end of the list
+    if (valCheck >= (loopImages.length - 1) || valCheck >= $("#forecastSlider").slider("option", "max")) {//Reaches the end of the list
         $("#forecastSlider").slider("option", "value", 0);
     }
 };
@@ -305,8 +517,12 @@ function slideLooper() {
 
 //Stops animation when stop button is pressed
 function pauseLooper() {
-    clearTimeout(timeoutId);
-    looperSpeed = resetSpeed;
+    try {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        looperSpeed = resetSpeed;
+    } catch (e) { }
 }
 
 function loadLevels() {
@@ -334,20 +550,46 @@ function hideAllDD() {
 function loadImage(which, isSummaries) {
     //ensmin-tmp2m
     //https://weather.msfc.nasa.gov/sport/dynamic/hinduKushEnsemble/20190902/hkhEnsemble_20190902-1800_f00100_ensmin-tmp2m.gif
+    console.log(which);
     var hour = "f00100";
-    if (which.indexOf("6h") > -1) {
+    if (which.indexOf("6h") > -1 ||
+        which.indexOf("d05") > -1) {
         hour = "f00600";
     } else if (which.indexOf("12h") > -1) {
         hour = "f01200";
     } else if (isSummaries || which.indexOf("24h") > -1) {
-        hour = "f02400";
+        if (initialTime == 12 && which.indexOf("-max") > -1) {
+            hour = "f03000";
+        } else {
+            hour = "f02400";
+        }
+    } else if (which.indexOf("mucaped") > -1 ||
+        which.indexOf("d04") > -1 ||
+        which.indexOf("relh") > -1 ||
+        which.indexOf("soilt") > -1 ||
+        which.indexOf("soilm") > -1 ||
+        which.indexOf("gvf") > -1 ||
+        which.indexOf("isot") > -1 ||
+        which.indexOf("tmpc") > -1 ||
+        which.indexOf("dwpc") > -1 ||
+        which.indexOf("pwtr") > -1 ||
+        which.indexOf("sbcape") > -1 ||
+        which.indexOf("scpd") > -1 ||
+        which.indexOf("shipd") > -1 ||
+        which.indexOf("tskin") > -1) {
+        hour = "f00000";
+    } else if (which.indexOf("3h") > -1) {
+        hour = "f00300";
     }
+    console.log(hour);
     currentSelection = which;
     currentIsSummary = isSummaries;
     var qParameter = "imagename="
         + currentDate + initialTime
-        + "/ens"
-        + "/hkhEnsemble_"
+        + "/"
+        + forecastType
+        + "/"
+        + forecastprefix
         + currentDate
         + "-"
         + initialTime
@@ -375,18 +617,10 @@ function loadSlider() {
         },
         slide: function (event, ui) {//Done when slider is moved by user
             handle.text(newmodelTimes[ui.value]);
-            // Following line is for debugging file times only
-            //$("#fileInfo").html(fileTimes[ui.value]);
-            //$("#fileInfo").html(loopImages[ui.value]);
-            //document.getElementById("loader").style.display = "none";//Turn off loading animation
-            //document.getElementById("myImg").style.opacity="1";//Bring image into focus
             showImage(ui.value);
         },
         change: function (event, ui) {//Done when slider is changed programmatically
             handle.text(newmodelTimes[ui.value]);
-            //$("#fileInfo").html(loopImages[ui.value]);
-            //document.getElementById("loader").style.display = "none";
-            //document.getElementById("myImg").style.opacity="1";
             showImage(ui.value);
         }
     });
@@ -483,7 +717,7 @@ function createFileList() {
     newmodelTimes = [];
     var nameFile;
     for (var k = 0; k < flList.length; k++) {
-        nameList.push(webModelPath + 'imagename=' + currentDate + initialTime + '/ens/' + modelName + '_' + currentDate + '-' + initialTime + '00_' + flList[k] + '_' + currentSelection + '.' + fileType);
+        nameList.push(webModelPath + 'imagename=' + currentDate + initialTime + '/' + forecastType + '/' + forecastprefix + currentDate + '-' + initialTime + '00_' + flList[k] + '_' + currentSelection + '.' + fileType);
     };
     //Check to see what files are available and add them to loopImages and newmodelTimes Lists
     $.each(nameList, function (i, item) {
@@ -497,6 +731,8 @@ function createFileList() {
                 } else if (this.readyState == 4 && this.status == 200) {//File exists
                     loopImages.push(item);
                     newmodelTimes.push(mdList[i]);
+                    newmodelTimes = newmodelTimes.sort();
+                    loopImages = loopImages.sort();
                 };
             } else {//What to do with the last file
                 if (this.readyState == 4 && this.status == 200) {
@@ -512,7 +748,6 @@ function createFileList() {
                     newmodelTimes = newmodelTimes.sort();
                     sliderStatus = true;
                 }
-                console.log(loopImages.length);
                 loadSlider();
                 initHandleVal();
             };
