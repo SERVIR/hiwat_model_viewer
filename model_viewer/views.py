@@ -47,16 +47,24 @@ def getjson(request):
     try:
         file = None
         while file is None:
+            print("looking for: " +  os.path.join(baseLocation ,
+                        initdir[:-2] + "18",
+                        forecasttype,
+                        forecastprefix + initdir[:-2] + '-1800.xml'))
             file = get_xml_file(os.path.join(baseLocation ,
                         initdir[:-2] + "18",
                         forecasttype,
                         forecastprefix + initdir[:-2] + '-1800.xml'))
             initdir = initdir[:-2] + "18"
             if file is None:
-                os.path.join(baseLocation ,
+                print("Looking for: " + os.path.join(baseLocation ,
                         initdir[:-2] + "12",
                         forecasttype,
-                        forecastprefix + initdir[:-2] + '-1200.xml')
+                        forecastprefix + initdir[:-2] + '-1200.xml'))
+                file = get_xml_file(os.path.join(baseLocation ,
+                        initdir[:-2] + "12",
+                        forecasttype,
+                        forecastprefix + initdir[:-2] + '-1200.xml'))
                 initdir = initdir[:-2] + "12"
             if file is None:
                 revindex = revindex - 1
