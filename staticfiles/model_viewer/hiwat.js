@@ -198,7 +198,8 @@ function setForecast(which) {
         forecastprefix = "hkhControl_"; //"hkhEnsemble_"
     }
     currentSelection = null;
-    getDocument();
+    //getDocument();
+    loadDate($("#datepicker").datepicker().val() + initialTime);
 }
 
 function toggleForecast(isDet) {
