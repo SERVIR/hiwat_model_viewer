@@ -16,7 +16,7 @@ var syncStatus = false;//For racing issue between slider and ajax
 var looperSpeed = 500;//Intial speed of animation
 var resetSpeed = 500;//Reset to initial speed
 var currentSelection;
-var disableddates = ["20190505", "20190504", "20190503", "20190901"
+var disableddates = ["20190901"
     , "20190902"
     , "20190903"
     , "20190904"
