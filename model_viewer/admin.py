@@ -1,3 +1,4 @@
 from django.contrib import admin
-
-# Register your models here.
+from model_viewer.models import DataPath
+# # Register your models here.
+admin.site.register(DataPath)

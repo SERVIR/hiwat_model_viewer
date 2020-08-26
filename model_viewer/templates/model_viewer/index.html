@@ -9,6 +9,17 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{% static 'model_viewer/jquery-ui.css' %}">
     <link rel="stylesheet" href="{% static 'model_viewer/style.css' %}" type="text/css">
+    <script>
+        // variables needed for hiwat.js to run 
+
+        var ensforecastprefix = "{{ensforecastprefix}}";
+        var forecastprefix = ensforecastprefix;
+        var detforecastprefix = "{{detforecastprefix}}";
+        //var forecastprefix = forecastprefix;
+        var dataset = forecastprefix.slice(0, -1);
+        console.log("forecastprefix: " + forecastprefix);
+        console.log("dataset: " + dataset);
+    </script>
     <script src="{% static 'model_viewer/jquery-3.4.1.min.js' %}"></script>
     <script src="{% static 'model_viewer/jquery-ui.min.js' %}"></script>
     <script src="{% static 'model_viewer/jquery-migrate.min.js' %}"></script>

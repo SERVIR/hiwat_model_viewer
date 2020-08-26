@@ -25,8 +25,26 @@ SECRET_KEY = 'o$zu-yv3nmia3ewjlisj%x4=bpo&xd%x99%82s28!4e20sv%#^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['hmv.servirglobal.net', 'localhost']
+ALLOWED_HOSTS = ['mkghmv.servirglobal.net', 'localhost']
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/home/bashmall/servir/webapps/mkg/hiwat_model_viewer/log/debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 # Application definition
 

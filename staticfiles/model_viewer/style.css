@@ -136,7 +136,7 @@ input:checked+.switchslider:before {
 }
 
 #cover {
-    background: url("https://hmv.servirglobal.net/static/model_viewer/loader.gif") no-repeat scroll center center #FFF;
+    background: url("/static/model_viewer/loader.gif") no-repeat scroll center center #FFF;
     position: absolute;
     height: 100%;
     width: 100%;

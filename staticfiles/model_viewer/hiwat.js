@@ -1,11 +1,11 @@
 //Global Variables
 var currentDate = "20190902";
-var dataset = "hkhEnsemble";
+// var dataset = "mkgEnsemble";
 var pastDate = "20180301";
 var webModelPath = "/ajax/getimage?";
 var initialTime = "1800";
 var forecastType = "ens";
-var forecastprefix = "hkhEnsemble_";
+//var forecastprefix = "mkgEnsemble_";
 var initialTime; //Initialization Time
 var forecastHours; //Number of hours model is run
 var forecastInterval, modelName; //Model period, name of model
@@ -16,6 +16,7 @@ var syncStatus = false;//For racing issue between slider and ajax
 var looperSpeed = 500;//Intial speed of animation
 var resetSpeed = 500;//Reset to initial speed
 var currentSelection;
+
 var disableddates = ["20190901"
     , "20190902"
     , "20190903"
@@ -192,10 +193,10 @@ var initialTime = "";
 function setForecast(which) {
     if (which === "ens") {
         forecastType = "ens";
-        forecastprefix = "hkhEnsemble_";
+        forecastprefix = ensforecastprefix; //"mkgEnsemble_";
     } else if (which === "det") {
         forecastType = "det"; //"ens"
-        forecastprefix = "hkhControl_"; //"hkhEnsemble_"
+        forecastprefix = detforecastprefix; //"mkgControl_"; //"hkhEnsemble_"
     }
     currentSelection = null;
     //getDocument();
@@ -230,7 +231,7 @@ function completeDatePicker(early, late) {
         changeYear: true,
         defaultDate: 0,
         showOn: "button",
-        buttonImage: "https://hmv.servirglobal.net/static/model_viewer/calendar.jpg",
+        buttonImage: "static/model_viewer/calendar.jpg",
         buttonImageOnly: true,
         buttonText: "Select Date",
         beforeShowDay: DisableSpecificDates,
@@ -267,7 +268,7 @@ function loadDate(which) {
         }
     });
 }
-
+var resultarray = [];
 function loadData(result) {
 
     var data = JSON.parse(result);
@@ -387,9 +388,14 @@ function loadData(result) {
                 "class": "dropdown-menu border-0 shadow",
                 "aria-labelledby": labelledby
             });
-            $.each(itemData.group, function () {
-                subList.append(getMenuItem(this, false, isSummaries));
-            });
+            if (Array.isArray(itemData.group)) {
+                $.each(itemData.group, function () {
+                    subList.append(getMenuItem(this, false, isSummaries));
+                });
+            } else {
+                subList.append(getMenuItem(itemData.group, false, isSummaries));
+            }
+
             item.append(subList);
         }
         if (itemData.variable) {
@@ -418,6 +424,7 @@ function loadData(result) {
     $("#txtinit").text(getFormattedDate(data.config.init));
     $menu.empty();
     $.each(data.config.category, function () {
+        resultarray.push(this);
         $menu.append(
             getMenuItem(this)
         );
@@ -551,7 +558,6 @@ function hideAllDD() {
 function loadImage(which, isSummaries) {
     //ensmin-tmp2m
     //https://weather.msfc.nasa.gov/sport/dynamic/hinduKushEnsemble/20190902/hkhEnsemble_20190902-1800_f00100_ensmin-tmp2m.gif
-    console.log(which);
     var hour = "f00100";
     if (which.indexOf("6h") > -1 ||
         which.indexOf("d05") > -1) {
@@ -582,7 +588,6 @@ function loadImage(which, isSummaries) {
     } else if (which.indexOf("3h") > -1) {
         hour = "f00300";
     }
-    console.log(hour);
     currentSelection = which;
     currentIsSummary = isSummaries;
     var qParameter = "imagename="
@@ -600,7 +605,7 @@ function loadImage(which, isSummaries) {
         + which
         + ".gif";
     $("#imghero").attr("src",
-        "https://hmv.servirglobal.net/ajax/getimage?" + qParameter);
+        "ajax/getimage?" + qParameter);
     $("#imghero").attr("alt", which);
     $("#imghero").attr("title", which);
     $('.dropdown-submenu .show').removeClass("show");
