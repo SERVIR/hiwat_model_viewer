@@ -2,6 +2,8 @@
 This is a web UI used to display and animate output images created by a HIWAT Model run
 
 ## INSTALLATION
+
+We recommend installing in an environment like virtualenv or conda, we have used virtualenv in this case
 ```bash
 pip install -r requirements.txt
 ```
