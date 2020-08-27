@@ -104,8 +104,32 @@ Edit the configuration below replacing as directed in the file
 
 ```
 
+## Give Apache ownership and proper permissions.  
+
+In our case Apache is the user, in others the user is www-data, this is depending on the OS and version of Apache.  You will need to set the owner to the proper user.
+```
+sudo chmod 775 Fullpath_To_Code/hiwat_model_viewer -R
+sudo chown apache:apache Fullpath_To_Code/hiwat_model_viewer -R
+
+```
+
+## Create super user
+
+Navigate to the code directory then create the super user to login to the admin interface
+
+```
+cd Fullpath_To_Code/hiwat_model_viewer
+python manage.py createsuperuser
+
+```
+Follow the prompts to create the user.  
+
 ## Restart your server
 ```
 sudo systemctl restart httpd
 ```
+
+# Test your application
+
+Navigate to the domain that you configured in your Apache .conf file.  You should see the application, however likely the default settings will not point to your data.  Navigate to /admin/ then login with the super user account that you just created.  Under the section MODEL_VIEWER, click Data paths, then click DataPath object(1).  Update the variables here to set the Title, directory that the image structure is located at, Ensforecastprefix, and Detforecastprefix.  Click SAVE.  Navigate back to the home page at your domain and you will see the application with the data that you pointed to.  Make sure that the data directory has proper permissions to access the images and xml document.
 
