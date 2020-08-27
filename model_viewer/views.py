@@ -10,6 +10,7 @@ import xmltodict
 from .models import DataPath
 import logging
 from django.template.response import TemplateResponse
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 logger = logging.getLogger(__name__)
 
@@ -126,7 +127,13 @@ def getimage(request):
     try:
         image_data = open(baseLocation + image_name, "rb").read()
     except:
-        return HttpResponse(status=204)
+        thePath = staticfiles_storage.path('model_viewer/unavailable.gif')
+        print("The path is: " + thePath)
+        try:
+            image_data = open(thePath, "rb").read()
+        except Exception as e:
+            print(e)
+            return HttpResponse(status=204)
     response = HttpResponse(image_data, content_type="image/gif")
     current_time = datetime.datetime.utcnow()
     last_modified = current_time - datetime.timedelta(days=1)
