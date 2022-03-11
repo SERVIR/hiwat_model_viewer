@@ -19,6 +19,7 @@
         var dataset = forecastprefix.slice(0, -1);
         console.log("forecastprefix: " + forecastprefix);
         console.log("dataset: " + dataset);
+        var disableddates = "{{disableddates}}".split(",");
     </script>
     <script src="{% static 'model_viewer/jquery-3.4.1.min.js' %}"></script>
     <script src="{% static 'model_viewer/jquery-ui.min.js' %}"></script>

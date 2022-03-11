@@ -1,4 +1,5 @@
 import datetime
+from datetime import date, timedelta
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -15,31 +16,15 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 logger = logging.getLogger(__name__)
 
 
-def index(request, template_name="model_viewer/index.html"):
-    args = {}
-    # Config variables needed in javascript
-    config = DataPath.objects.first()
-    ensforecastprefix = config.ensforecastprefix
-    detforecastprefix = config.detforecastprefix
-    args['ensforecastprefix'] = ensforecastprefix
-    args['detforecastprefix'] = detforecastprefix
-    return TemplateResponse(request, template_name, args)
+def format_date_string(date_time_obj):
+    return date_time_obj.strftime('%Y%m%d')
 
 
-@csrf_exempt
-def getjson(request):
-    initdate = request.GET.get('initdate')
-    forecasttype = request.GET.get('forecasttype')
-    forecastprefix = None
-    config = DataPath.objects.first()
-    if forecasttype == "ens":
-        forecastprefix = config.ensforecastprefix  # "mkgEnsemble_"
-    elif forecasttype == "det":
-        forecastprefix = config.detforecastprefix  # "mkgControl_"
+def format_directory_to_date(directory_string):
+    return datetime.datetime.strptime(directory_string[:-2], '%Y%m%d')
 
-    baseLocation = config.directory  # "/mnt/hiwat/mkg/image_files"
-    print("baseLocation: " + baseLocation)
-    print(initdate)
+
+def get_directory_listing(baseLocation):
     dirlist = [name for name in os.listdir(
         baseLocation) if os.path.isdir(os.path.join(baseLocation, name))]
     if 'LOGS' in dirlist:
@@ -56,6 +41,61 @@ def getjson(request):
         dirlist.remove('test_2019050618')
     if 'tarballs' in dirlist:
         dirlist.remove('tarballs')
+    return dirlist
+
+
+def index(request, template_name="model_viewer/index.html"):
+    args = {}
+    # Config variables needed in javascript
+    config = DataPath.objects.first()
+    ensforecastprefix = config.ensforecastprefix
+    detforecastprefix = config.detforecastprefix
+    args['ensforecastprefix'] = ensforecastprefix
+    args['detforecastprefix'] = detforecastprefix
+
+
+    baseLocation = config.directory
+    dirlist = sorted(get_directory_listing(baseLocation))
+
+    d = list(map(format_directory_to_date, dirlist))
+    date_set = set(d[0] + timedelta(x) for x in range((d[-1] - d[0]).days))
+    missing = sorted(date_set - set(d))
+
+    print(missing)
+
+    disableddates = list(map(format_date_string, missing))
+    print(disableddates)
+    args['disableddates'] = ','.join(disableddates)
+    # here get directory list identify any missing days between first and last
+    # convert list to dates date_time_obj = datetime.strptime('20190502', '%Y%m%d')
+    # then use the following
+    #  from datetime import date, timedelta
+    #  d = [date(2010, 2, 23), date(2010, 2, 24), date(2010, 2, 25),
+    #          date(2010, 2, 26), date(2010, 3, 1), date(2010, 3, 2)]
+    #  date_set = set(d[0] + timedelta(x) for x in range((d[-1] - d[0]).days))
+    #  missing = sorted(date_set - set(d))
+    # disableddates = map(format_date_string, missing)
+    # send to template to set disableddates
+    # args['disableddates'] = disableddates
+
+    return TemplateResponse(request, template_name, args)
+
+
+@csrf_exempt
+def getjson(request):
+    initdate = request.GET.get('initdate')
+    forecasttype = request.GET.get('forecasttype')
+    forecastprefix = None
+    config = DataPath.objects.first()
+    if forecasttype == "ens":
+        forecastprefix = config.ensforecastprefix  # "mkgEnsemble_"
+    elif forecasttype == "det":
+        forecastprefix = config.detforecastprefix  # "mkgControl_"
+
+    baseLocation = config.directory  # "/mnt/hiwat/mkg/image_files"
+    print("baseLocation: " + os.path.join(baseLocation, ''))
+    print(initdate)
+    dirlist = get_directory_listing(baseLocation)
     revSortedList = sorted(dirlist, reverse=True)
     revindex = 0
     latestdir = str(revSortedList[revindex])
