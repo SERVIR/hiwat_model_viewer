@@ -581,7 +581,7 @@ function loadImage(which, isSummaries) {
         which.indexOf("tmpc") > -1 ||
         which.indexOf("dwpc") > -1 ||
         which.indexOf("pwtr") > -1 ||
-        which.indexOf("sbcape") > -1 ||
+        // which.indexOf("sbcape") > -1 ||
         which.indexOf("scpd") > -1 ||
         which.indexOf("shipd") > -1 ||
         which.indexOf("tskin") > -1) {
