@@ -1,135 +1,183 @@
 # HIWAT Model Viewer
 This is a web UI used to display and animate output images created by a HIWAT Model run
 
-## INSTALLATION
+[![Django: 4.x](https://img.shields.io/badge/Django-4.x-blue)](https://www.djangoproject.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![SERVIR: Global](https://img.shields.io/badge/SERVIR-Global-green)](https://servirglobal.net)
 
-We recommend installing in an environment like virtualenv or conda, we have used virtualenv in this case
-```bash
-pip install -r requirements.txt
+## Setup and Installation
+The installation described here will make use of conda to ensure there are no package conflicts with
+existing or future applications on the machine.  It is highly recommended using a dedicated environment
+for this application to avoid any issues.
+
+### Recommended
+Conda (To manage packages within the applications own environment)
+
+### Environment
+- Create the env
+
+```commandline
+conda env create -f environment.yml
 ```
 
-## SETUP
-Edit hiwat_model_viewer/hiwat/settings.py
+Add a file named data.json in the base directory.  This file will hold a json object containing
+the siteID for your application, ALLOWED_HOSTS, and CSRF_TRUSTED_ORIGINS.  The format will be:
 
-Enter the domain name you will be using for your application.  You may also want to remove localhost when you have the application fully configured.
-
-ALLOWED_HOSTS = ['your_domain_name', 'localhost']
-
-## Configure Apache 
-Depending on your OS and Apache version you may have different paths, however the paths used here are specifically for CentOS
-
-Create a new config file hmv.conf (you may name it as you wish as long as you include the .conf file extension) in the conf.d directory located 
-
-```bash
-sudo touch /etc/httpd/conf.d/hmv.conf
+```json
+{
+  "siteID": 3,
+  "ALLOWED_HOSTS": ["localhost", "your_domain.com", "127.0.0.1"],
+  "CSRF_TRUSTED_ORIGINS": ["https://your_domain.com"],
+  "SECRET_KEY": "REPLACE WITH A SECRET KEY USING LETTERS, NUMBERS, AND SPECIAL CHARACTERS"
+}
 ```
 
-Edit the configuration below replacing "yourdomain" in all locations with the domain you will be pointing at the application
+- enter the environment
 
-```
-# hmv.conf
-
-<VirtualHost *:80>
-    ServerAdmin webmaster@yourdomain
-    ServerName yourdomain
-    ServerAlias www.yourdomain
-    Header set Access-Control-Allow-Origin "http://localhost:3000"
-    Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
-
-    RewriteEngine on
-    RewriteCond %{SERVER_NAME} =www.yourdomain [OR]
-    RewriteCond %{SERVER_NAME} =yourdomain
-    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,QSA,R=permanent]
-
-    WSGIPassAuthorization On
-    WSGIApplicationGroup %{GLOBAL}
-
-</VirtualHost>
+```shell
+conda activate hmv
 ```
 
-Create a second new config file hmv-ssl.conf (you may name it as you wish as long as you include the .conf file extension) in the conf.d directory located 
-
-```bash
-sudo touch /etc/httpd/conf.d/hmv-ssl.conf
-```
-
-Edit the configuration below replacing as directed in the file
-
-```
-# hmv-ssl.config
-
-<VirtualHost *:443>
-	ServerName yourdomain
-	ServerAlias www.yourdomain
-
-	Header set Access-Control-Allow-Origin "http://localhost:3000"
-	Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept"
-	Header set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
-
-	WSGIScriptAlias / Fullpath_To_Code/hiwat_model_viewer/hiwat/wsgi.py
-	WSGIDaemonProcess hiwatviewer python-path=Full_Path_T_Your_Virtual_Env/.virtualenvs/hmv/lib/python3.6/site-packages:Full_Path_To_Code/hiwat_model_viewer/ processes=1 threads=25
-
-	<Directory Fullpath_To_Code/hiwat_model_viewer/hiwat>
-		WSGIProcessGroup hiwatviewer
-		WSGIApplicationGroup %{GLOBAL}
-		<Files wsgi.py>
-			Require all granted
-		</Files>
-	</Directory> 
-
-	<Directory Fullpath_To_Code/hiwat_model_viewer/staticfiles>
-		Require all granted
-	</Directory>
-
-	<Directory Fullpath_To_Code/hiwat_model_viewer/media>
-		Require all granted
-	</Directory>
-
-	<Directory /var/log/httpd>
-		Require all granted
-	</Directory>
-
-
-	Alias /media/ Fullpath_To_Code/hiwat_model_viewer/media/
-	Alias /static/ Fullpath_To_Code/hiwat_model_viewer/staticfiles/
- 
-
-	SSLEngine on
-	SSLCertificateFile Fullpath_To_SSLCertificate.crt
-	SSLCertificateKeyFile Fullpath_To_rsaopen.key
-	SSLCACertificateFile Fullpath_To_CA_Certificte.crt
-
-</VirtualHost>
-
-```
-
-## Give Apache ownership and proper permissions.  
-
-In our case Apache is the user, in others the user is www-data, this is depending on the OS and version of Apache.  You will need to set the owner to the proper user.
-```
-sudo chmod 775 Fullpath_To_Code/hiwat_model_viewer -R
-sudo chown apache:apache Fullpath_To_Code/hiwat_model_viewer -R
-
-```
-
-## Create super user
-
-Navigate to the code directory then create the super user to login to the admin interface
-
-```
-cd Fullpath_To_Code/hiwat_model_viewer
+- Create database tables and superuser
+###### follow prompts to create super user
+```commandline
+python manage.py migrate
 python manage.py createsuperuser
-
-```
-Follow the prompts to create the user.  
-
-## Restart your server
-```
-sudo systemctl restart httpd
+python manage.py collectstatic
 ```
 
-# Test your application
+At this point you should be able to start the application.  From the root directory you can run the following command
 
-Navigate to the domain that you configured in your Apache .conf file.  You should see the application, however likely the default settings will not point to your data.  Navigate to /admin/ then login with the super user account that you just created.  Under the section MODEL_VIEWER, click Data paths, then click DataPath object(1).  Update the variables here to set the Title, directory that the image structure is located at, Ensforecastprefix, and Detforecastprefix.  Click SAVE.  Navigate back to the home page at your domain and you will see the application with the data that you pointed to.  Make sure that the data directory has proper permissions to access the images and xml document.
+```
+python manage.py runserver
+```
 
+Of course running the application in this manner is only for development.  We recommend installing
+this application on a server and serving it through nginx using gunicorn (conda install gunicorn) for production.  To do this you will need to
+have both installed on your server.  There are enough resources explaining in depth how to install them,
+so we will avoid duplicating this information.  We recommend adding a service to start the application
+by creating a .service file located at /etc/systemd/system.  We named ours hmv.service
+The service file will contain the following, please substitute the correct paths as mentioned below.
+
+# Server installation
+## Create Application Service
+As mentioned above create the following file at /etc/systemd/system/ and name it hmv.service
+```editorconfig
+[Unit]
+Description=hmv daemon
+After=network.target
+
+[Service]
+User=nginx
+Group=nginx
+SocketUser=nginx
+WorkingDirectory={REPLACE WITH PATH TO APPLICATION ROOT}/hiwat
+accesslog = "/var/log/hmv/hmv_gunicorn.log"
+errorlog = "/var/log/hmv/hmv_gunicornerror.log"
+ExecStart={REPLACE WITH FULL PATH TO gunicorn IN YOUR CONDA ENV}/bin/gunicorn --timeout 60 --workers 5 --pythonpath '{REPLACE WITH PATH TO APPLICATION ROOT},{REPLACE WITH FULL PATH TO YOUR CONDA ENV}/lib/python3.10/site-packages' --bind unix:{REPLACE WITH LOCATION YOU WANT THE SOCK}/hmv_prod.sock wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+## Create nginx site
+Create a file in /etc/nginx/conf.d/ named hmv_prod.conf
+
+```editorconfig
+upstream hmv_prod {
+  server unix:{REPLACE WITH LOCATION YOU WANT THE SOCK}/hmv_prod.sock 
+  fail_timeout=0;
+}
+
+server {
+    listen 443;
+    server_name {REPLACE WITH YOUR DOMAIN};
+    add_header Access-Control-Allow-Origin *;
+
+    ssl on;
+    ssl_certificate {REPLACE WITH FULL PATH TO CERT FILE};
+    ssl_certificate_key {REPLACE WITH FULL PATH TO CERT KEY};
+
+    # Some Settings that worked along the way
+    client_max_body_size 8000M;
+    client_body_buffer_size 8000M;
+    client_body_timeout 120;
+
+    proxy_read_timeout 300;
+    proxy_connect_timeout 300;
+    proxy_send_timeout 300;
+    fastcgi_buffers 8 16k;
+    fastcgi_buffer_size 32k;
+    fastcgi_connect_timeout 90s;
+    fastcgi_send_timeout 90s;
+    fastcgi_read_timeout 90s;
+
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        autoindex on;
+        alias {REPLACE WITH FULL PATH TO APPS}/staticfiles/;
+    }
+
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://unix:{REPLACE WITH LOCATION YOU WANT THE SOCK}/hmv_prod.sock ;
+    }
+
+
+}
+
+# Reroute any non https traffic to https
+server {
+    listen 80;
+    server_name {REPLACE WITH YOUR DOMAIN};
+    rewrite ^(.*) https://$server_name$1 permanent;
+}
+
+```
+
+# Create Alias commands to make starting the application simple
+Create a file at /etc/profile.d/ named hmv_alias.sh and add the following:
+```commandline
+# Global Alias
+alias d='conda deactivate'
+alias so='sudo chown -R www-data /servir_apps'
+alias nsr='sudo service nginx restart'
+alias nss='sudo service nginx stop'
+
+
+# SAMS Alias
+alias hmv='cd /servir_apps/hiwat_model_viewer'
+alias acthmv='conda activate hmv'
+alias uohmv='sudo chown -R ${USER} /servir_apps/hiwat_model_viewer'
+alias sohmv='sudo chown -R www-data /servir_apps/hiwat_model_viewer'
+alias hmvstart='sudo service hmv restart; sudo service nginx restart; so'
+alias hmvstop='sudo service hmv stop'
+alias hmvrestart='hmvstop; hmvstart'
+
+```
+Now activate the alias file by running
+```commandline
+source /etc/profile.d/hmv_alias.sh
+```
+
+Now you should be able to run hmvstart to run the production application.
+
+## Contact
+
+### Authors
+
+- [Billy Ashmall (NASA)](mailto:billy.ashmall@nasa.gov)
+
+## License and Distribution
+
+Hiwat Model Viewer is distributed by SERVIR under the terms of the MIT License. See
+[LICENSE](https://github.com/SERVIR/SAMS/blob/master/LICENSE) in this directory for more information.
+
+## Privacy & Terms of Use
+
+Hiwat Model Viewer abides to all of SERVIR's privacy and terms of use as described
+at [https://servirglobal.net/Privacy-Terms-of-Use](https://servirglobal.net/Privacy-Terms-of-Use).

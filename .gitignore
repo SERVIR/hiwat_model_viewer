@@ -2,4 +2,4 @@
 __pycache__
 staticfiles
 db.sqlite3
-hiwat/settings.py
+data.json
