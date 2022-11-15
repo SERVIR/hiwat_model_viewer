@@ -2,15 +2,28 @@
     max-width: 100%;
 }
 
+div#logos {
+    justify-content: space-around;
+    -ms-flex-align: center;
+    align-items: center;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-flow: row wrap;
+    flex-flow: row wrap;
+    padding-top: 33px;
+    padding-bottom: 33px;
+}
+
 .logo-image img {
     max-width: 100%;
 }
 
 .logo-image {
-    vertical-align: middle;
-    display: table-cell;
-    padding: 0 2px;
-}
+    -ms-flex-item-align: center;
+    align-self: center;
+    display: inline-table;
+    width: 14%;
+    text-align: center;}
 
 .tcenter {
     text-align: center;
