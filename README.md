@@ -21,13 +21,12 @@ conda env create -f environment.yml
 ```
 
 Add a file named data.json in the base directory.  This file will hold a json object containing
-the siteID for your application, ALLOWED_HOSTS, and CSRF_TRUSTED_ORIGINS.  The format will be:
+ALLOWED_HOSTS, LOG_PATH, and SECRET_KEY.  The format will be:
 
 ```json
 {
-  "siteID": 3,
   "ALLOWED_HOSTS": ["localhost", "your_domain.com", "127.0.0.1"],
-  "CSRF_TRUSTED_ORIGINS": ["https://your_domain.com"],
+  "LOG_PATH": "path_to_where_you_want_logs_written",
   "SECRET_KEY": "REPLACE WITH A SECRET KEY USING LETTERS, NUMBERS, AND SPECIAL CHARACTERS"
 }
 ```
@@ -39,7 +38,7 @@ conda activate hmv
 ```
 
 - Create database tables and superuser
-###### follow prompts to create super user
+###### follow prompts to create superuser
 ```commandline
 python manage.py migrate
 python manage.py createsuperuser

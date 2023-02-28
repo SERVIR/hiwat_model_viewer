@@ -38,7 +38,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': '/servir_apps/hiwat_model_viewer/log/debug.log',
+            'filename': data["LOG_PATH"],
         },
     },
     'loggers': {
@@ -95,6 +95,7 @@ WSGI_APPLICATION = 'hiwat.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 DATABASES = {
     'default': {
