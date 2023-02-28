@@ -18,6 +18,9 @@ class DataPath(models.Model):
     def save(self, *args, **kwargs):
         super(DataPath, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return str(self.id) + "-" + self.title
+
     class Meta:
         ordering = ['created_on']
 
