@@ -31,6 +31,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = data["ALLOWED_HOSTS"]
 
+CSRF_TRUSTED_ORIGINS = data['CSRF_TRUSTED_ORIGINS']
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
