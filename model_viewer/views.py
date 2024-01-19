@@ -33,25 +33,6 @@ def get_directory_listing(base_location):
     dir_list = [dir_name for dir_name in dir_list if dir_name not in excluded_directories]
 
     return dir_list
-    # dir_list = [name for name in os.listdir(
-    #     base_location) if os.path.isdir(os.path.join(base_location, name))]
-    #
-    # # This is used to remove known bad directories
-    # if 'LOGS' in dir_list:
-    #     dir_list.remove('LOGS')
-    # if '2019050218_test' in dir_list:
-    #     dir_list.remove('2019050218_test')
-    # if '2019050618_test' in dir_list:
-    #     dir_list.remove('2019050618_test')
-    # if '2019050218_orig' in dir_list:
-    #     dir_list.remove('2019050218_orig')
-    # if 'orig_2019050218' in dir_list:
-    #     dir_list.remove('orig_2019050218')
-    # if 'test_2019050618' in dir_list:
-    #     dir_list.remove('test_2019050618')
-    # if 'tarballs' in dir_list:
-    #     dir_list.remove('tarballs')
-    # return dir_list
 
 
 def index(request, template_name="model_viewer/index.html"):
@@ -86,10 +67,7 @@ def getjson(request):
     forecast_type = request.GET.get('forecasttype')
     forecast_prefix = None
     config = DataPath.objects.first()
-    if forecast_type == "ens":
-        forecast_prefix = config.ensforecastprefix  # "mkgEnsemble_"
-    elif forecast_type == "det":
-        forecast_prefix = config.detforecastprefix  # "mkgControl_"
+    forecast_prefix = config.ensforecastprefix if forecast_type == "ens" else config.detforecastprefix
 
     base_location = config.directory  # "/mnt/hiwat/mkg/image_files"
     print("baseLocation: " + os.path.join(base_location, ''))
@@ -99,56 +77,39 @@ def getjson(request):
     rev_index = 0
     latest_dir = str(rev_sorted_list[rev_index])
     earliest_dir = str(sorted(dir_list)[0])
-    if init_date is None:
-        init_dir = latest_dir
-    else:
-        init_dir = init_date
+    init_dir = init_date or latest_dir
     print("first: " + init_dir)
     file = None
     try:
-        while file is None:
-            print("looking for: " + os.path.join(base_location,
-                                                 init_dir[:-2] + "18",
-                                                 forecast_type,
-                                                 forecast_prefix + init_dir[:-2] + '-1800.xml'))
-            file = get_xml_file(os.path.join(base_location,
-                                             init_dir[:-2] + "18",
+
+        def get_file_and_init_dir(_init_dir, post_fix_time, postfix):
+            return get_xml_file(os.path.join(base_location,
+                                             _init_dir[:-2] + post_fix_time,
                                              forecast_type,
-                                             forecast_prefix + init_dir[:-2] + '-1800.xml'))
-            init_dir = init_dir[:-2] + "18"
-            if file is None:
-                print("Looking for: " + os.path.join(base_location,
-                                                     init_dir[:-2] + "12",
-                                                     forecast_type,
-                                                     forecast_prefix + init_dir[:-2] + '-1200.xml'))
-                file = get_xml_file(os.path.join(base_location,
-                                                 init_dir[:-2] + "12",
-                                                 forecast_type,
-                                                 forecast_prefix + init_dir[:-2] + '-1200.xml'))
-                init_dir = init_dir[:-2] + "12"
-            if file is None:
-                print("Looking for: " + os.path.join(base_location,
-                                                     init_dir[:-2] + "06",
-                                                     forecast_type,
-                                                     forecast_prefix + init_dir[:-2] + '-0600.xml'))
-                file = get_xml_file(os.path.join(base_location,
-                                                 init_dir[:-2] + "06",
-                                                 forecast_type,
-                                                 forecast_prefix + init_dir[:-2] + '-0600.xml'))
-                init_dir = init_dir[:-2] + "06"
-            if file is None:
-                rev_index = rev_index - 1
-                latest_dir = str(rev_sorted_list[rev_index])
-                init_dir = latest_dir
+                                             forecast_prefix + init_dir[:-2] + postfix)), init_dir[
+                                                                                          :-2] + post_fix_time
+
+        file, init_dir = get_file_and_init_dir(init_dir, "18",'-1800.xml')
+
+        if file is None:
+            file, init_dir = get_file_and_init_dir(init_dir, "12", '-1200.xml')
+
+        if file is None:
+            file, init_dir = get_file_and_init_dir(init_dir, "06", '-0600.xml')
+
+        if file is None:
+            rev_index = rev_index - 1
+            latest_dir = str(rev_sorted_list[rev_index])
+            init_dir = latest_dir
 
     except Exception:
         print("this should never happen")
     print("fourth: " + init_dir)
-    tempjson = json.loads(json.dumps(xmltodict.parse(file.read())))
-    tempjson['config']['init'] = init_dir
-    tempjson['config']['earliest'] = earliest_dir
-    tempjson['config']['latest'] = latest_dir
-    return JsonResponse(json.dumps(tempjson), safe=False)
+    temp_json = json.loads(json.dumps(xmltodict.parse(file.read()))) if file is not None else {}
+    temp_json['config']['init'] = init_dir
+    temp_json['config']['earliest'] = earliest_dir
+    temp_json['config']['latest'] = latest_dir
+    return JsonResponse(json.dumps(temp_json), safe=False)
 
 
 def get_xml_file(path):

@@ -36,11 +36,23 @@ CSRF_TRUSTED_ORIGINS = data['CSRF_TRUSTED_ORIGINS']
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s, %(asctime)s, %(module)s, %(process)d, %(thread)d, %(message)s',
+            'datefmt': "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s, %(message)s'
+        },
+    },
     'handlers': {
         'file': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': data["LOG_PATH"],
+            'when': 'midnight',
+            'backupCount': 10,
+            'formatter': 'verbose'
         },
     },
     'loggers': {

@@ -4,4 +4,4 @@ __pycache__
 staticfiles
 db.sqlite3
 data.json
-log/debug.log
+log/
