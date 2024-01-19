@@ -7,7 +7,7 @@ from datetime import timedelta
 import xmltodict
 from django.http import HttpResponse
 from django.http import JsonResponse
-from django.template.response import TemplateResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import DataPath
@@ -24,35 +24,41 @@ def format_directory_to_date(directory_string):
 
 
 def get_directory_listing(base_location):
-    dir_list = [name for name in os.listdir(
-        base_location) if os.path.isdir(os.path.join(base_location, name))]
+    excluded_directories = ['LOGS', '2019050218_test', '2019050618_test', '2019050218_orig',
+                            'orig_2019050218', 'test_2019050618', 'tarballs']
 
-    # This is used to remove known bad directories
-    if 'LOGS' in dir_list:
-        dir_list.remove('LOGS')
-    if '2019050218_test' in dir_list:
-        dir_list.remove('2019050218_test')
-    if '2019050618_test' in dir_list:
-        dir_list.remove('2019050618_test')
-    if '2019050218_orig' in dir_list:
-        dir_list.remove('2019050218_orig')
-    if 'orig_2019050218' in dir_list:
-        dir_list.remove('orig_2019050218')
-    if 'test_2019050618' in dir_list:
-        dir_list.remove('test_2019050618')
-    if 'tarballs' in dir_list:
-        dir_list.remove('tarballs')
+    dir_list = [name for name in os.listdir(base_location) if os.path.isdir(os.path.join(base_location, name))]
+
+    # Remove excluded directories
+    dir_list = [dir_name for dir_name in dir_list if dir_name not in excluded_directories]
+
     return dir_list
+    # dir_list = [name for name in os.listdir(
+    #     base_location) if os.path.isdir(os.path.join(base_location, name))]
+    #
+    # # This is used to remove known bad directories
+    # if 'LOGS' in dir_list:
+    #     dir_list.remove('LOGS')
+    # if '2019050218_test' in dir_list:
+    #     dir_list.remove('2019050218_test')
+    # if '2019050618_test' in dir_list:
+    #     dir_list.remove('2019050618_test')
+    # if '2019050218_orig' in dir_list:
+    #     dir_list.remove('2019050218_orig')
+    # if 'orig_2019050218' in dir_list:
+    #     dir_list.remove('orig_2019050218')
+    # if 'test_2019050618' in dir_list:
+    #     dir_list.remove('test_2019050618')
+    # if 'tarballs' in dir_list:
+    #     dir_list.remove('tarballs')
+    # return dir_list
 
 
 def index(request, template_name="model_viewer/index.html"):
-    args = {}
     # Config variables needed in javascript
     config = DataPath.objects.first()
     ens_forecast_prefix = config.ensforecastprefix
     det_forecast_prefix = config.detforecastprefix
-    args['ensforecastprefix'] = ens_forecast_prefix
-    args['detforecastprefix'] = det_forecast_prefix
 
     base_location = config.directory
     dir_list = sorted(get_directory_listing(base_location))
@@ -66,9 +72,12 @@ def index(request, template_name="model_viewer/index.html"):
 
     disabled_dates = list(map(format_date_string, missing))
     print(disabled_dates)
-    args['disableddates'] = ','.join(disabled_dates)
 
-    return TemplateResponse(request, template_name, args)
+    return render(request, template_name, context={
+        'ensforecastprefix': ens_forecast_prefix,
+        'detforecastprefix': det_forecast_prefix,
+        'disableddates': ','.join(disabled_dates)
+    })
 
 
 @csrf_exempt

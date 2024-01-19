@@ -26,3 +26,11 @@ class DataPath(models.Model):
 
         def __unicode__(self):
             return self.title
+
+
+class Domain(models.Model):
+    title = models.CharField(max_length=255)
+    abbreviation = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.title + "- (" + self.abbreviation + ")"
