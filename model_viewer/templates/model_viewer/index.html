@@ -3,7 +3,7 @@
 
 <head>
     {% load static %}
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="{% static 'model_viewer/bootstrap.min.css' %}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -11,9 +11,19 @@
     <link rel="stylesheet" href="{% static 'model_viewer/style.css' %}" type="text/css">
     <script>
         // variables needed for hiwat.js to run
+        let domains;
         try {
-            var domains = {{ domains|safe }};
-        } catch(e){console.log(e);}
+            {% if domains %}
+                 domains = {{ domains|safe }};
+                // Your JavaScript code that uses the 'domains' variable goes here
+            {% else %}
+                // Handle the case when 'domains' is empty
+                 domains = [];
+                // Additional logic or default values as needed
+            {% endif %}
+        } catch (e) {
+            console.log(e);
+        }
         var ensforecastprefix = "{{ensforecastprefix}}";
         var forecastprefix = ensforecastprefix;
         var detforecastprefix = "{{detforecastprefix}}";
@@ -30,124 +40,124 @@
     <script src="{% static 'model_viewer/bootstrap.min.js' %}"></script>
     <script src="{% static 'model_viewer/hiwat.js' %}"></script>
     <script src="{% static 'model_viewer/jquery.ui.touch-punch.min.js' %}"></script>
-    <link rel="shortcut icon" type="image/png" href="{% static 'model_viewer/favicon.ico' %}" />
+    <link rel="shortcut icon" type="image/png" href="{% static 'model_viewer/favicon.ico' %}"/>
     <title>HIWAT Model Viewer</title>
 
 </head>
 
 <body>
-    <div id="cover"></div>
-    {% csrf_token %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">HIWAT Model Viewer</a>
-        <button type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbars"
+<div id="cover"></div>
+{% csrf_token %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">HIWAT Model Viewer</a>
+    <button type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbars"
             aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <div class="collapse navbar-collapse" id="navbarContent">
+    <div class="collapse navbar-collapse" id="navbarContent">
 
-            <ul id="mymenu" class="navbar-nav  mr-auto"></ul>
+        <ul id="mymenu" class="navbar-nav  mr-auto"></ul>
 
-        </div>
-    </nav>
-    <br style="clear: both;">
+    </div>
+</nav>
+<br style="clear: both;">
 
-    <div class="container">
-        <!-- Content here -->
+<div class="container">
+    <!-- Content here -->
 
-        <div class="row">
+    <div class="row">
 
-            <div class="col-12">
-                <div id="forecastSlider"><br>
-                    <div id="custom-handle" class="ui-slider-handle"></div>&nbsp;&nbsp;&nbsp;&nbsp;<br>
-                </div>
-            </div>
-            <br />
-            <div class="col-6"><span class="ctrlText">Initialized: </span><span id="txtinit" class="ctrlText"></span>
-                <input hidden type="text" id="datepicker">
-            </div>
-            <div class="col-6 tright">
-                <span class="ctrlText">Ensemble </span>
-                <label class="switch">
-                    <input type="checkbox" onchange="toggleForecast(this.checked)">
-                    <span class="switchslider round"></span>
-                </label> <span class="ctrlText">Deterministic </span>
+        <div class="col-12">
+            <div id="forecastSlider"><br>
+                <div id="custom-handle" class="ui-slider-handle"></div>&nbsp;&nbsp;&nbsp;&nbsp;<br>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12 tcenter">
-                <div onclick="firstImage()" class="btn btn-default"><i class="fa fa-fast-backward"
-                        style="color:#337ab7;"></i></div>
-                <div onclick="prevImage()" class="btn btn-default"><i class="fa fa-backward" style="color:#337ab7;"></i>
-                </div>
-                <div onclick="pauseLooper()" class="btn btn-default"><i class="fa fa-stop" style="color:#337ab7;"></i>
-                </div>
-                <div onclick="slideLooper()" class="btn btn-default"><i class="fa fa-play" style="color:#337ab7;"></i>
-                </div>
-                <div onclick="nextImage()" class="btn btn-default"><i class="fa fa-forward" style="color:#337ab7;"></i>
-                </div>
-                <div onclick="lastImage()" class="btn btn-default"><i class="fa fa-fast-forward"
-                        style="color:#337ab7;"></i></div>
-
-                <div onclick="speedDown()" class="btn btn-default"><i class="fa fa-arrow-down"
-                        style="color:#337ab7;"></i></div>
-                <div onclick="speedUp()" class="btn btn-default"><i class="fa fa-arrow-up" style="color:#337ab7;"></i>
-                </div>
-
-            </div>
+        <br/>
+        <div class="col-6"><span class="ctrlText">Initialized: </span><span id="txtinit" class="ctrlText"></span>
+            <input hidden type="text" id="datepicker">
         </div>
+        <div class="col-6 tright">
+            <span class="ctrlText">Ensemble </span>
+            <label class="switch">
+                <input type="checkbox" onchange="toggleForecast(this.checked)">
+                <span class="switchslider round"></span>
+            </label> <span class="ctrlText">Deterministic </span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 tcenter">
+            <div onclick="firstImage()" class="btn btn-default"><i class="fa fa-fast-backward"
+                                                                   style="color:#337ab7;"></i></div>
+            <div onclick="prevImage()" class="btn btn-default"><i class="fa fa-backward" style="color:#337ab7;"></i>
+            </div>
+            <div onclick="pauseLooper()" class="btn btn-default"><i class="fa fa-stop" style="color:#337ab7;"></i>
+            </div>
+            <div onclick="slideLooper()" class="btn btn-default"><i class="fa fa-play" style="color:#337ab7;"></i>
+            </div>
+            <div onclick="nextImage()" class="btn btn-default"><i class="fa fa-forward" style="color:#337ab7;"></i>
+            </div>
+            <div onclick="lastImage()" class="btn btn-default"><i class="fa fa-fast-forward"
+                                                                  style="color:#337ab7;"></i></div>
 
-        <p>
-            <img id="imghero" src="" alt="" title="" onload="$('#cover').fadeOut(1000);" />
-        </p>
+            <div onclick="speedDown()" class="btn btn-default"><i class="fa fa-arrow-down"
+                                                                  style="color:#337ab7;"></i></div>
+            <div onclick="speedUp()" class="btn btn-default"><i class="fa fa-arrow-up" style="color:#337ab7;"></i>
+            </div>
+
+        </div>
     </div>
 
-    <div id="mymodal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content"> 
-                <div class="modal-header">
-                    <h5 class="modal-title">HIWAT Model Viewer</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    The High Impact Weather Assessment Toolkit (HIWAT) uses a mesoscale numerical weather prediction
-                    model
-                    and the Global Precipitation Measurement (GPM) constellation of satellites. The HIWAT Model Viewer
-                    provides outlooks for lightning strikes, high impact winds, high rainfall rates, hail damage,
-                    and other weather events.
-                </div>
-                <div class="modal-footer">
-                    <div align="center" id="logos">
-                        <div class="logo-image"><a href="https://www.usaid.gov/" target="_blank"><img
-                                    src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/usaid.png"></a>
-                        </div>
-                        <div class="logo-image"><a href="https://appliedsciences.nasa.gov/" target="_blank"><img
-                                    src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/nasa.png"></a>
-                        </div>
-                        <div class="logo-image"><a href="https://www.icrisat.org/" target="_blank"><img
-                                    src="https://www.servirglobal.net/Portals/_default/Skins/Servir2015/img/icrisat.png"></a>
-                        </div>
-                        <div class="logo-image"><a href="http://servir.rcmrd.org/" target="_blank"><img
-                                    src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/rcmrd.png"></a>
-                        </div>
-                        <div class="logo-image"><a href="http://servir.icimod.org/" target="_blank"><img
-                                    src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/icimod.png"></a>
-                        </div>
-                        <div class="logo-image"><a href="https://servir.adpc.net/" target="_blank"><img
-                                    src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/adpc.png"></a>
-                        </div>
-                        <div class="logo-image"><a href="https://ciat.cgiar.org/" target="_blank"><img
-                                    src="https://www.servirglobal.net/Portals/_default/Skins/Servir2015/img/CIAT-logo.png"></a>
-                        </div>
+    <p>
+        <img id="imghero" src="" alt="" title="" onload="$('#cover').fadeOut(1000);"/>
+    </p>
+</div>
+
+<div id="mymodal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">HIWAT Model Viewer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                The High Impact Weather Assessment Toolkit (HIWAT) uses a mesoscale numerical weather prediction
+                model
+                and the Global Precipitation Measurement (GPM) constellation of satellites. The HIWAT Model Viewer
+                provides outlooks for lightning strikes, high impact winds, high rainfall rates, hail damage,
+                and other weather events.
+            </div>
+            <div class="modal-footer">
+                <div align="center" id="logos">
+                    <div class="logo-image"><a href="https://www.usaid.gov/" target="_blank"><img
+                            src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/usaid.png"></a>
                     </div>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <div class="logo-image"><a href="https://appliedsciences.nasa.gov/" target="_blank"><img
+                            src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/nasa.png"></a>
+                    </div>
+                    <div class="logo-image"><a href="https://www.icrisat.org/" target="_blank"><img
+                            src="https://www.servirglobal.net/Portals/_default/Skins/Servir2015/img/icrisat.png"></a>
+                    </div>
+                    <div class="logo-image"><a href="http://servir.rcmrd.org/" target="_blank"><img
+                            src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/rcmrd.png"></a>
+                    </div>
+                    <div class="logo-image"><a href="http://servir.icimod.org/" target="_blank"><img
+                            src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/icimod.png"></a>
+                    </div>
+                    <div class="logo-image"><a href="https://servir.adpc.net/" target="_blank"><img
+                            src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/adpc.png"></a>
+                    </div>
+                    <div class="logo-image"><a href="https://ciat.cgiar.org/" target="_blank"><img
+                            src="https://www.servirglobal.net/Portals/_default/Skins/Servir2015/img/CIAT-logo.png"></a>
+                    </div>
                 </div>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
 
 </body>
