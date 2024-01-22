@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import DataPath
+from .models import *
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,8 @@ def index(request, template_name="model_viewer/index.html"):
     base_location = config.directory
     dir_list = sorted(get_directory_listing(base_location))
 
+    domains = Domain.objects.all()
+
     # here get directory list identify any missing days between first and last
     # so we can send to the client in order to remove those date options
 
@@ -55,6 +57,7 @@ def index(request, template_name="model_viewer/index.html"):
     print(disabled_dates)
 
     return render(request, template_name, context={
+        'domains': json.dumps(list(domains.values())),
         'ensforecastprefix': ens_forecast_prefix,
         'detforecastprefix': det_forecast_prefix,
         'disableddates': ','.join(disabled_dates)
@@ -69,7 +72,7 @@ def getjson(request):
     config = DataPath.objects.first()
     forecast_prefix = config.ensforecastprefix if forecast_type == "ens" else config.detforecastprefix
 
-    base_location = config.directory  # "/mnt/hiwat/mkg/image_files"
+    base_location = config.directory
     print("baseLocation: " + os.path.join(base_location, ''))
     print(init_date)
     dir_list = get_directory_listing(base_location)
@@ -123,12 +126,13 @@ def get_xml_file(path):
 def getimage(request):
     image_name = request.GET.get("imagename")
     config = DataPath.objects.first()
-    base_location = config.directory + "/"  # "/mnt/hiwat/mkg/image_files/"  #
+    base_location = config.directory
     try:
-        image_data = open(base_location + image_name, "rb").read()
-    except:
+        image_data = open(os.path.join(base_location, image_name), "rb").read()
+    except FileNotFoundError:
         # image missing (shouldn't happen due to the disabled_dates search above, but just in case)
         return HttpResponse(status=204)
+
     response = HttpResponse(image_data, content_type="image/gif")
     current_time = datetime.datetime.utcnow()
     last_modified = current_time - datetime.timedelta(days=1)

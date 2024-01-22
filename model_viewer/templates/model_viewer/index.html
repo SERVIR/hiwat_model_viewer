@@ -10,8 +10,10 @@
     <link rel="stylesheet" href="{% static 'model_viewer/jquery-ui.css' %}">
     <link rel="stylesheet" href="{% static 'model_viewer/style.css' %}" type="text/css">
     <script>
-        // variables needed for hiwat.js to run 
-
+        // variables needed for hiwat.js to run
+        try {
+            var domains = {{ domains|safe }};
+        } catch(e){console.log(e);}
         var ensforecastprefix = "{{ensforecastprefix}}";
         var forecastprefix = ensforecastprefix;
         var detforecastprefix = "{{detforecastprefix}}";
