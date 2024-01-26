@@ -101,6 +101,9 @@ def getjson(request):
             file, init_dir = get_file_and_init_dir(init_dir, "06", '-0600.xml')
 
         if file is None:
+            file, init_dir = get_file_and_init_dir(init_dir, "00", '-0000.xml')
+
+        if file is None:
             rev_index = rev_index - 1
             latest_dir = str(rev_sorted_list[rev_index])
             init_dir = latest_dir

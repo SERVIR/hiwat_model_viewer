@@ -12,18 +12,13 @@
     <script>
         // variables needed for hiwat.js to run
         let domains;
-        try {
-            {% if domains %}
-                 domains = {{ domains|safe }};
-                // Your JavaScript code that uses the 'domains' variable goes here
-            {% else %}
-                // Handle the case when 'domains' is empty
-                 domains = [];
-                // Additional logic or default values as needed
-            {% endif %}
-        } catch (e) {
-            console.log(e);
-        }
+       
+        {% if domains %}
+            domains = {{ domains|safe }};
+        {% else %}
+            domains = [];
+        {% endif %}
+
         var ensforecastprefix = "{{ensforecastprefix}}";
         var forecastprefix = ensforecastprefix;
         var detforecastprefix = "{{detforecastprefix}}";

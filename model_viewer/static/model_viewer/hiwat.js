@@ -4,7 +4,7 @@ let forecastType = "ens";
 let forecastHours; //Number of hours model is run
 let forecastInterval, modelName; //Model period, name of model
 let flList; //For list of forecast hours (i.e. fHHHMM)
-let timeoutID;//Initalized timeout setting
+var timeoutID;//Initalized timeout setting
 let looperSpeed = 500;//Intial speed of animation
 let resetSpeed = 500;//Reset to initial speed
 let currentSelection;
