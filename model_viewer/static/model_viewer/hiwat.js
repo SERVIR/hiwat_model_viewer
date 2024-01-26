@@ -417,7 +417,14 @@ function loadImage(which, isSummaries) {
         return domain.abbreviation === which;
     });
     if (isDomain) {
-        qParameter = `imagename=${current_parameters.currentDate}${current_parameters.initialTime}/${current_parameters.forecastType}/${current_parameters.forecastprefix}${current_parameters.currentDate}-${current_parameters.initialTime}00_${current_parameters.hour}_${current_parameters.which}-${which}.gif`;
+
+        split_var = current_parameters.which.split("-");
+        joined_var =  [split_var.slice(0,1), which, split_var.slice(1).join("-")].join("-");
+        qParameter = `imagename=${current_parameters.currentDate}${current_parameters.initialTime}/${current_parameters.forecastType}/${current_parameters.forecastprefix}${current_parameters.currentDate}-${current_parameters.initialTime}00_${hour}_${joined_var}.gif`;
+
+        // qParameter = `imagename=${current_parameters.currentDate}${current_parameters.initialTime}/${current_parameters.forecastType}/${current_parameters.forecastprefix}${current_parameters.currentDate}-${current_parameters.initialTime}00_${current_parameters.hour}_${current_parameters.which}-${which}.gif`;
+
+
         current_parameters.domain = which;
         $("#imghero").attr("src",
             "ajax/getimage?" + qParameter);
@@ -461,7 +468,13 @@ function loadImage(which, isSummaries) {
         currentSelection = which;
         currentIsSummary = isSummaries;
         if(domains.length){
-            qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}-${current_parameters.domain}.gif`;
+
+            split_var = which.split("-");
+            joined_var =  [split_var.slice(0,1), current_parameters.domain, split_var.slice(1).join("-")].join("-");
+            qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${joined_var}.gif`;
+
+            // qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}-${current_parameters.domain}.gif`;
+
         }else {
             qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}.gif`;
         }
