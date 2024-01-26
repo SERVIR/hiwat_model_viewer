@@ -8,7 +8,7 @@ var timeoutID;//Initalized timeout setting
 let looperSpeed = 500;//Intial speed of animation
 let resetSpeed = 500;//Reset to initial speed
 let currentSelection;
-
+let loopImages = [];
 let pname;
 let fileType;
 let currentDate = "";
@@ -310,7 +310,7 @@ function getFormattedDate(str) {
 
 function showImage(i) {
     document.getElementById("imghero").src = loopImages[i];
-};
+}
 
 //Used to speed up animations from speed up button
 function speedUp() {
@@ -347,7 +347,7 @@ function nextImage() {
     if (valCheck >= (loopImages.length - 1) || valCheck >= $("#forecastSlider").slider("option", "max")) {//Reaches the end of the list
         $("#forecastSlider").slider("option", "value", 0);
     }
-};
+}
 
 //Steps through the image list to the previous one temporally
 function prevImage() {
@@ -417,10 +417,19 @@ function loadImage(which, isSummaries) {
         return domain.abbreviation === which;
     });
     if (isDomain) {
+        console.log("domain changed");
+
+        console.log("current_parameters: " + current_parameters);
+
+        console.log("which: " + which);
 
         split_var = current_parameters.which.split("-");
-        joined_var =  [split_var.slice(0,1), which, split_var.slice(1).join("-")].join("-");
-        qParameter = `imagename=${current_parameters.currentDate}${current_parameters.initialTime}/${current_parameters.forecastType}/${current_parameters.forecastprefix}${current_parameters.currentDate}-${current_parameters.initialTime}00_${hour}_${joined_var}.gif`;
+        joined_var = [split_var.slice(0, 1), which, split_var.slice(1).join("-")].join("-");
+
+        if (joined_var.endsWith('-')) {
+                joined_var = joined_var.slice(0, -1);
+            }
+        qParameter = `imagename=${current_parameters.currentDate}${current_parameters.initialTime}/${current_parameters.forecastType}/${current_parameters.forecastprefix}${current_parameters.currentDate}-${current_parameters.initialTime}00_${current_parameters.hour}_${joined_var}.gif`;
 
         // qParameter = `imagename=${current_parameters.currentDate}${current_parameters.initialTime}/${current_parameters.forecastType}/${current_parameters.forecastprefix}${current_parameters.currentDate}-${current_parameters.initialTime}00_${current_parameters.hour}_${current_parameters.which}-${which}.gif`;
 
@@ -432,8 +441,9 @@ function loadImage(which, isSummaries) {
         $("#imghero").attr("title", which);
 
     } else {
-        if(domains.length && !current_parameters.domain){
-            current_parameters.domain = domains[0].abbreviation;
+        if (domains.length && !current_parameters.domain) {
+
+            current_parameters.domain = 'd02';
         }
         let hour = "f00100";
         if (which.indexOf("6h") > -1 ||
@@ -467,15 +477,28 @@ function loadImage(which, isSummaries) {
         }
         currentSelection = which;
         currentIsSummary = isSummaries;
-        if(domains.length){
+        if (domains.length) {
+
+
+            domains.forEach(domain => {
+                let abbreviation = domain.abbreviation;
+                let pattern = new RegExp(`-${abbreviation}`, 'g');
+                which = which.replace(pattern, '');
+            });
+            which = which.replace("d01", '');
 
             split_var = which.split("-");
-            joined_var =  [split_var.slice(0,1), current_parameters.domain, split_var.slice(1).join("-")].join("-");
+
+
+            joined_var = [split_var.slice(0, 1), current_parameters.domain, split_var.slice(1).join("-")].join("-");
+            if (joined_var.endsWith('-')) {
+                joined_var = joined_var.slice(0, -1);
+            }
             qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${joined_var}.gif`;
 
             // qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}-${current_parameters.domain}.gif`;
 
-        }else {
+        } else {
             qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}.gif`;
         }
         $("#imghero").attr("src",
@@ -489,8 +512,6 @@ function loadImage(which, isSummaries) {
             "initialTime": initialTime,
             "forecastType": forecastType,
             "forecastprefix": forecastprefix,
-            "currentDate": currentDate,
-            "initialTime": initialTime,
             "hour": hour,
             "which": which
         };
@@ -594,6 +615,8 @@ function initializeSlider() {
     //syncSlider();
 }
 
+var debugsplit_var;
+
 function createFileList() {
     nameList = [];//To be used to get list of filenames
     var k;
@@ -606,11 +629,46 @@ function createFileList() {
     loopImages = [];
     errorImages = [];
     newmodelTimes = [];
+    //check if domain, if so modify the currentSelection to add domain in
+
+    if (domains.length) {
+        if (domains.length && !current_parameters.domain) {
+            current_parameters.domain = 'd02';
+        }
+
+        console.log("currentSelection: " + currentSelection);
+
+        domains.forEach(domain => {
+            let abbreviation = domain.abbreviation;
+            let pattern = new RegExp(`-${abbreviation}`, 'g');
+            currentSelection = currentSelection.replace(pattern, '');
+        });
+        currentSelection = currentSelection.replace("d01", '');
+
+        split_var = currentSelection.split("-").filter(i => i);
+        debugsplit_var = split_var;
+        joined_var = [split_var.slice(0, 1), current_parameters.domain, split_var.slice(1).join("-")].join("-");
+
+
+        if (joined_var.endsWith('-')) {
+            joined_var = joined_var.slice(0, -1);
+        }
+
+
+        console.log("joined_var: " + joined_var);
+
+
+    }
     var nameFile;
     for (var k = 0; k < flList.length; k++) {
-        nameList.push(webModelPath + 'imagename=' + currentDate + initialTime + '/' + forecastType + '/' + forecastprefix + currentDate + '-' + initialTime + '00_' + flList[k] + '_' + currentSelection + '.' + fileType);
+        if (domains.length) {
+            url_name = joined_var;
+        } else {
+            url_name = currentSelection;
+        }
+        nameList.push(webModelPath + 'imagename=' + currentDate + initialTime + '/' + forecastType + '/' + forecastprefix + currentDate + '-' + initialTime + '00_' + flList[k] + '_' + url_name + '.' + fileType);
     }
-    ;
+
     //Check to see what files are available and add them to loopImages and newmodelTimes Lists
     $.each(nameList, function (i, item) {
         myxhr = new XMLHttpRequest();
@@ -644,8 +702,7 @@ function createFileList() {
                 loadSlider();
                 initHandleVal();
             }
-            ;
-        }
+        };
     });
 
 }
