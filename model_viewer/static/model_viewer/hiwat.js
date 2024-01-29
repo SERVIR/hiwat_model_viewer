@@ -70,6 +70,9 @@ function completeDatePicker(early, late) {
 
 $(document).ready(function () {
     getDocument();
+    $("#imghero").on("error", function() {
+        $(this).attr("src", "static/model_viewer/images/missing_image.png");
+    });
 
 });
 
@@ -169,6 +172,7 @@ function getMenuItem(itemData, isVariable, isSummaries, imageLoaded, data) {
                     $('#cover').show();
                     pauseLooper();
                     firstImage();
+                    console.log("menu clicked");
                     loadImage(itemData.name, true);
                     initializeSlider();
                     loadSlider();
@@ -179,10 +183,12 @@ function getMenuItem(itemData, isVariable, isSummaries, imageLoaded, data) {
                 console.log("switched looking");
                 if (!currentIsSummary) {
                     if (currentSelection) {
+                        console.log("Now Loading");
                         loadImage(currentSelection);
                         imageLoaded = true;
                     } else {
                         if (data.config.defaultVariable.name == itemData.name) {
+
                             console.log(data.config.defaultVariable.name);
                             loadImage(itemData.name);
                             imageLoaded = true;
@@ -201,6 +207,7 @@ function getMenuItem(itemData, isVariable, isSummaries, imageLoaded, data) {
                     $('#cover').show();
                     pauseLooper();
                     firstImage();
+                    console.log("this menu clicked");
                     loadImage(itemData.name);
                     initializeSlider();
                     loadSlider();
@@ -307,8 +314,10 @@ function openInfo() {
 }
 
 var myTimeOut;
+var newmodelTimes = [];
 
 function initHandleVal() {
+    console.log("eeks");
     clearTimeout(myTimeOut);
     if (newmodelTimes[$("#forecastSlider").slider("value")]) {
         $("#custom-handle").text(newmodelTimes[$("#forecastSlider").slider("value")]);
@@ -422,6 +431,9 @@ function hideAllDD() {
 let current_parameters = {};
 
 function loadImage(which, isSummaries) {
+
+    console.log("loadImage: " + which);
+
     let qParameter;
     /**
      * @param {{abbreviation:string}} domain
@@ -443,9 +455,6 @@ function loadImage(which, isSummaries) {
                 joined_var = joined_var.slice(0, -1);
             }
         qParameter = `imagename=${current_parameters.currentDate}${current_parameters.initialTime}/${current_parameters.forecastType}/${current_parameters.forecastprefix}${current_parameters.currentDate}-${current_parameters.initialTime}00_${current_parameters.hour}_${joined_var}.gif`;
-
-        // qParameter = `imagename=${current_parameters.currentDate}${current_parameters.initialTime}/${current_parameters.forecastType}/${current_parameters.forecastprefix}${current_parameters.currentDate}-${current_parameters.initialTime}00_${current_parameters.hour}_${current_parameters.which}-${which}.gif`;
-
 
         current_parameters.domain = which;
         $("#imghero").attr("src",
@@ -514,6 +523,7 @@ function loadImage(which, isSummaries) {
         } else {
             qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}.gif`;
         }
+        console.log("newmodelTimes.length: " + newmodelTimes.length);
         $("#imghero").attr("src",
             "ajax/getimage?" + qParameter);
         $("#imghero").attr("alt", which);
@@ -688,11 +698,13 @@ function createFileList() {
         myxhr = new XMLHttpRequest();
         myxhr.open("GET", item, true);
         myxhr.send(item);
+        console.log("Checking images");
         myxhr.onreadystatechange = function () {
             if (i < stopPoint) {
                 if (this.readyState == 4 && this.status == 404) {//Missing File				
                     errorImages.push(item);
                 } else if (this.readyState == 4 && this.status == 200) {//File exists
+                    console.log("thinks it found: " + item);
                     loopImages.push(item);
                     newmodelTimes.push(mdList[i]);
                     newmodelTimes = newmodelTimes.sort();
@@ -700,6 +712,7 @@ function createFileList() {
                 }
             } else {//What to do with the last file
                 if (this.readyState == 4 && this.status == 200) {
+                    console.log("thinks it found in second loop: " + item);
                     loopImages.push(item);
                     newmodelTimes.push(mdList[i]);
                     loopImages = loopImages.sort();
@@ -712,8 +725,9 @@ function createFileList() {
                     newmodelTimes = newmodelTimes.sort();
                     sliderStatus = true;
                 }
-                loadSlider();
-                initHandleVal();
+                console.log("past finding");
+                 loadSlider();
+                 initHandleVal();
             }
         };
     });
