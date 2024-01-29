@@ -134,7 +134,8 @@ def getimage(request):
         image_data = open(os.path.join(base_location, image_name), "rb").read()
     except FileNotFoundError:
         # image missing (shouldn't happen due to the disabled_dates search above, but just in case)
-        return HttpResponse(status=204)
+        image_data = open(os.path.join(base_location, "missing_image.png"), "rb").read()
+        # return HttpResponse(status=204)
 
     response = HttpResponse(image_data, content_type="image/gif")
     current_time = datetime.datetime.utcnow()
