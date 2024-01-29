@@ -465,7 +465,7 @@ function loadImage(which, isSummaries) {
         } else if (which.indexOf("12h") > -1) {
             hour = "f01200";
         } else if (isSummaries || which.indexOf("24h") > -1) {
-            if (initialTime == 12 && which.indexOf("-max") > -1) {
+            if ((initialTime == 12 || initialTime == '00') && which.indexOf("-max") > -1) {
                 hour = "f03000";
             } else {
                 hour = "f02400";
@@ -698,7 +698,6 @@ function createFileList() {
                     newmodelTimes = newmodelTimes.sort();
                     loopImages = loopImages.sort();
                 }
-                ;
             } else {//What to do with the last file
                 if (this.readyState == 4 && this.status == 200) {
                     loopImages.push(item);
