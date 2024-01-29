@@ -259,10 +259,16 @@ function loadData(result) {
     completeDatePicker(data.config.earliest.substring(0, 8), data.config.latest.substring(0, 8));
     $("#txtinit").text(getFormattedDate(data.config.init));
     $menu.empty();
+    console.log("forecastType: " + forecastType);
     if (domains.length) {
+
         var domain_menu = {
             "title": "Domain",
-            "variable": domains.map(function (item) {
+            "variable": domains
+                .filter(function (item) {
+                    return item[forecastType + "_enabled"] === true;
+                })
+                .map(function (item) {
                 return {
                     id: item.id,
                     description: item.title, // Change 'title' to 'description'
