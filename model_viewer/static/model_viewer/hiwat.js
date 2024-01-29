@@ -176,6 +176,7 @@ function getMenuItem(itemData, isVariable, isSummaries, imageLoaded, data) {
             });
         } else {
             if (!imageLoaded) {
+                console.log("switched looking");
                 if (!currentIsSummary) {
                     if (currentSelection) {
                         loadImage(currentSelection);
@@ -187,6 +188,12 @@ function getMenuItem(itemData, isVariable, isSummaries, imageLoaded, data) {
                             imageLoaded = true;
                         }
                     }
+                } else{
+                    if (data.config.defaultVariable.name == itemData.name) {
+                            console.log(data.config.defaultVariable.name);
+                            loadImage(itemData.name);
+                            imageLoaded = true;
+                        }
                 }
             }
             item.on({
@@ -609,6 +616,7 @@ function initializeSlider() {
     flList = timeStrings.fileInfo;
     mdList = timeStrings.sliderInfo;
     flLength = flList.length;
+
     createFileList();
     newmodelTimes = newmodelTimes.sort();
     loopImages = loopImages.sort();
