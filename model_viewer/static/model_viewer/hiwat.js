@@ -72,6 +72,7 @@ $(document).ready(function () {
     getDocument();
     $("#imghero").on("error", function() {
         $(this).attr("src", "static/model_viewer/images/missing_image.png");
+        clearTimeout(myTimeOut);
     });
 
 });
@@ -463,6 +464,7 @@ function loadImage(which, isSummaries) {
         $("#imghero").attr("title", which);
 
     } else {
+        console.log("in the else: " + current_parameters.domain);
         if (domains.length && !current_parameters.domain) {
 
             current_parameters.domain = 'd02';
@@ -489,7 +491,7 @@ function loadImage(which, isSummaries) {
             which.indexOf("tmpc") > -1 ||
             which.indexOf("dwpc") > -1 ||
             which.indexOf("pwtr") > -1 ||
-            // which.indexOf("sbcape") > -1 ||
+            which.indexOf("200tmpc") > -1 ||
             which.indexOf("scpd") > -1 ||
             which.indexOf("shipd") > -1 ||
             which.indexOf("tskin") > -1) {
@@ -536,7 +538,8 @@ function loadImage(which, isSummaries) {
             "forecastType": forecastType,
             "forecastprefix": forecastprefix,
             "hour": hour,
-            "which": which
+            "which": which,
+            "domain": current_parameters.domain
         };
     }
     hideAllDD();
@@ -654,7 +657,7 @@ function createFileList() {
     errorImages = [];
     newmodelTimes = [];
     //check if domain, if so modify the currentSelection to add domain in
-
+    console.log("current_parameters.domain: " + current_parameters.domain);
     if (domains.length) {
         if (domains.length && !current_parameters.domain) {
             current_parameters.domain = 'd02';
@@ -698,13 +701,13 @@ function createFileList() {
         myxhr = new XMLHttpRequest();
         myxhr.open("GET", item, true);
         myxhr.send(item);
-        console.log("Checking images");
+        // console.log("Checking images");
         myxhr.onreadystatechange = function () {
             if (i < stopPoint) {
                 if (this.readyState == 4 && this.status == 404) {//Missing File				
                     errorImages.push(item);
                 } else if (this.readyState == 4 && this.status == 200) {//File exists
-                    console.log("thinks it found: " + item);
+                    // console.log("thinks it found: " + item);
                     loopImages.push(item);
                     newmodelTimes.push(mdList[i]);
                     newmodelTimes = newmodelTimes.sort();
@@ -712,7 +715,7 @@ function createFileList() {
                 }
             } else {//What to do with the last file
                 if (this.readyState == 4 && this.status == 200) {
-                    console.log("thinks it found in second loop: " + item);
+                    // console.log("thinks it found in second loop: " + item);
                     loopImages.push(item);
                     newmodelTimes.push(mdList[i]);
                     loopImages = loopImages.sort();
