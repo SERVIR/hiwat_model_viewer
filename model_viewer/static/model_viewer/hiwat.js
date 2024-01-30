@@ -268,25 +268,27 @@ function loadData(result) {
     $("#txtinit").text(getFormattedDate(data.config.init));
     $menu.empty();
     console.log("forecastType: " + forecastType);
-    if (domains.length) {
+    if(forecastType === "ens") {
+        if (domains.length) {
 
-        var domain_menu = {
-            "title": "Domain",
-            "variable": domains
-                .filter(function (item) {
-                    return item[forecastType + "_enabled"] === true;
-                })
-                .map(function (item) {
-                return {
-                    id: item.id,
-                    description: item.title, // Change 'title' to 'description'
-                    name: item.abbreviation, // Change 'abbreviation' to 'variable'
-                };
-            })
-        };
-        $menu.append(
-            getMenuItem(domain_menu, false, false, false, debug_data)
-        );
+            var domain_menu = {
+                "title": "Domain",
+                "variable": domains
+                    .filter(function (item) {
+                        return item[forecastType + "_enabled"] === true;
+                    })
+                    .map(function (item) {
+                        return {
+                            id: item.id,
+                            description: item.title, // Change 'title' to 'description'
+                            name: item.abbreviation, // Change 'abbreviation' to 'variable'
+                        };
+                    })
+            };
+            $menu.append(
+                getMenuItem(domain_menu, false, false, false, debug_data)
+            );
+        }
     }
 
     $.each(data.config.category, function () {
@@ -465,9 +467,11 @@ function loadImage(which, isSummaries) {
 
     } else {
         console.log("in the else: " + current_parameters.domain);
-        if (domains.length && !current_parameters.domain) {
+        if(forecastType === "ens") {
+            if (domains.length && !current_parameters.domain) {
 
-            current_parameters.domain = 'd02';
+                current_parameters.domain = 'd02';
+            }
         }
         let hour = "f00100";
         if (which.indexOf("6h") > -1 ||
@@ -501,6 +505,7 @@ function loadImage(which, isSummaries) {
         }
         currentSelection = which;
         currentIsSummary = isSummaries;
+        if(forecastType === "ens") {
         if (domains.length) {
 
 
@@ -523,6 +528,8 @@ function loadImage(which, isSummaries) {
             // qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}-${current_parameters.domain}.gif`;
 
         } else {
+            qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}.gif`;
+        }}else {
             qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}.gif`;
         }
         console.log("newmodelTimes.length: " + newmodelTimes.length);
@@ -658,39 +665,45 @@ function createFileList() {
     newmodelTimes = [];
     //check if domain, if so modify the currentSelection to add domain in
     console.log("current_parameters.domain: " + current_parameters.domain);
-    if (domains.length) {
-        if (domains.length && !current_parameters.domain) {
-            current_parameters.domain = 'd02';
+    if(forecastType === "ens"){
+        if (domains.length) {
+            if (domains.length && !current_parameters.domain) {
+                current_parameters.domain = 'd02';
+            }
+
+            console.log("currentSelection: " + currentSelection);
+
+            domains.forEach(domain => {
+                let abbreviation = domain.abbreviation;
+                let pattern = new RegExp(`-${abbreviation}`, 'g');
+                currentSelection = currentSelection.replace(pattern, '');
+            });
+            currentSelection = currentSelection.replace("d01", '');
+
+            split_var = currentSelection.split("-").filter(i => i);
+            debugsplit_var = split_var;
+            joined_var = [split_var.slice(0, 1), current_parameters.domain, split_var.slice(1).join("-")].join("-");
+
+
+            if (joined_var.endsWith('-')) {
+                joined_var = joined_var.slice(0, -1);
+            }
+
+
+            console.log("joined_var: " + joined_var);
+
+
         }
-
-        console.log("currentSelection: " + currentSelection);
-
-        domains.forEach(domain => {
-            let abbreviation = domain.abbreviation;
-            let pattern = new RegExp(`-${abbreviation}`, 'g');
-            currentSelection = currentSelection.replace(pattern, '');
-        });
-        currentSelection = currentSelection.replace("d01", '');
-
-        split_var = currentSelection.split("-").filter(i => i);
-        debugsplit_var = split_var;
-        joined_var = [split_var.slice(0, 1), current_parameters.domain, split_var.slice(1).join("-")].join("-");
-
-
-        if (joined_var.endsWith('-')) {
-            joined_var = joined_var.slice(0, -1);
-        }
-
-
-        console.log("joined_var: " + joined_var);
-
-
     }
     var nameFile;
     for (var k = 0; k < flList.length; k++) {
-        if (domains.length) {
-            url_name = joined_var;
-        } else {
+        if(forecastType === "ens") {
+            if (domains.length) {
+                url_name = joined_var;
+            } else {
+                url_name = currentSelection;
+            }
+        } else{
             url_name = currentSelection;
         }
         nameList.push(webModelPath + 'imagename=' + currentDate + initialTime + '/' + forecastType + '/' + forecastprefix + currentDate + '-' + initialTime + '00_' + flList[k] + '_' + url_name + '.' + fileType);
