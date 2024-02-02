@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 import os
+import re
 from datetime import timedelta
 
 import xmltodict
@@ -23,6 +24,19 @@ def format_directory_to_date(directory_string):
     return datetime.datetime.strptime(directory_string[:-2], '%Y%m%d')
 
 
+def is_valid_date_directory(directory, base):
+    # Check if the directory follows the YYYYMMDD pattern
+    date_pattern = re.compile(r'\d{8}')
+    match = date_pattern.match(directory)
+
+    if not match:
+        return False
+
+    # Check if the directory contains a subdirectory named 'ens' that is not empty
+    ens_directory = os.path.join(base, directory, 'ens')
+    return os.path.isdir(ens_directory) and os.listdir(ens_directory)
+
+
 def get_directory_listing(base_location):
     excluded_directories = ['LOGS', '2019050218_test', '2019050618_test', '2019050218_orig',
                             'orig_2019050218', 'test_2019050618', 'tarballs']
@@ -31,6 +45,7 @@ def get_directory_listing(base_location):
 
     # Remove excluded directories
     dir_list = [dir_name for dir_name in dir_list if dir_name not in excluded_directories]
+    dir_list = [dir_name for dir_name in dir_list if is_valid_date_directory(dir_name, base_location)]
 
     return dir_list
 
