@@ -26,7 +26,7 @@ def format_directory_to_date(directory_string):
 
 def is_valid_date_directory(directory, base):
     # Check if the directory follows the YYYYMMDD pattern
-    date_pattern = re.compile(r'\d{8}')
+    date_pattern = re.compile(r'\d{4}\d{2}\d{2}\d{2}$')
     match = date_pattern.match(directory)
 
     if not match:
@@ -38,13 +38,13 @@ def is_valid_date_directory(directory, base):
 
 
 def get_directory_listing(base_location):
-    excluded_directories = ['LOGS', '2019050218_test', '2019050618_test', '2019050218_orig',
-                            'orig_2019050218', 'test_2019050618', 'tarballs']
+    # excluded_directories = ['LOGS', '2019050218_test', '2019050618_test', '2019050218_orig',
+    #                         'orig_2019050218', 'test_2019050618', 'tarballs']
 
     dir_list = [name for name in os.listdir(base_location) if os.path.isdir(os.path.join(base_location, name))]
 
     # Remove excluded directories
-    dir_list = [dir_name for dir_name in dir_list if dir_name not in excluded_directories]
+    # dir_list = [dir_name for dir_name in dir_list if dir_name not in excluded_directories]
     dir_list = [dir_name for dir_name in dir_list if is_valid_date_directory(dir_name, base_location)]
 
     return dir_list
