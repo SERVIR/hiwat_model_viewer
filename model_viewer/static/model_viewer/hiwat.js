@@ -71,7 +71,18 @@ function completeDatePicker(early, late) {
 $(document).ready(function () {
     getDocument();
     $("#imghero").on("error", function() {
-        $(this).attr("src", "static/model_viewer/images/missing_image.png");
+        if(newmodelTimes.length){
+            let failed_url = $("#imghero").attr('src');
+            const split_url = failed_url.split("_");
+            var the_time = split_url[split_url.length - 2];
+            var new_time = newmodelTimes[0] + the_time.substring(newmodelTimes[0].length);
+            split_url[split_url.length - 2] = new_time;
+
+            $(this).attr("src", split_url.join("_"));
+
+        }else {
+            $(this).attr("src", "static/model_viewer/images/missing_image.png");
+        }
         clearTimeout(myTimeOut);
     });
 
