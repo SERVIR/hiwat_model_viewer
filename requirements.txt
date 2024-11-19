@@ -1,3 +1,3 @@
-Django==3.2.25
-requests==2.31.0
+Django==3.2.245
+requests==2.32.0
 xmltodict==0.12.0
