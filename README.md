@@ -30,6 +30,16 @@ ALLOWED_HOSTS, LOG_PATH, and SECRET_KEY.  The format will be:
   "SECRET_KEY": "REPLACE WITH A SECRET KEY USING LETTERS, NUMBERS, AND SPECIAL CHARACTERS"
 }
 ```
+If you would like to add google analytics you will need to add your analytics key to the object which will make it look like:
+```json
+{
+  "ALLOWED_HOSTS": ["localhost", "your_domain.com", "127.0.0.1"],
+  "LOG_PATH": "path_to_where_you_want_logs_written",
+  "SECRET_KEY": "REPLACE WITH A SECRET KEY USING LETTERS, NUMBERS, AND SPECIAL CHARACTERS",
+  "analytics_key": "YOUR_key_obtained_from_google_analytics"
+}
+
+
 
 - enter the environment
 
