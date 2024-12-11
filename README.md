@@ -38,7 +38,7 @@ If you would like to add google analytics you will need to add your analytics ke
   "SECRET_KEY": "REPLACE WITH A SECRET KEY USING LETTERS, NUMBERS, AND SPECIAL CHARACTERS",
   "analytics_key": "YOUR_key_obtained_from_google_analytics"
 }
-
+```
 
 
 - enter the environment
