@@ -6,6 +6,7 @@ import re
 from datetime import timedelta
 
 import xmltodict
+from django.conf import settings
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -50,6 +51,29 @@ def get_directory_listing(base_location):
     return dir_list
 
 
+def get_config_value():
+    # Construct the path to the data.json file
+    config_file_path = os.path.join(settings.BASE_DIR, 'data.json')
+
+    try:
+        # Open and read the JSON file
+        with open(config_file_path, 'r') as config_file:
+            config_data = json.load(config_file)
+
+        # Check if 'analytics_key' exists
+        if 'analytics_key' in config_data:
+            return config_data['analytics_key']
+        else:
+            print("The key 'analytics_key' does not exist in the configuration.")
+            return None
+    except FileNotFoundError:
+        print(f"Configuration file not found at: {config_file_path}")
+        return None
+    except json.JSONDecodeError:
+        print(f"Error decoding JSON in the configuration file: {config_file_path}")
+        return None
+
+
 def index(request, template_name="model_viewer/index.html"):
     # Config variables needed in javascript
     config = DataPath.objects.first()
@@ -69,14 +93,23 @@ def index(request, template_name="model_viewer/index.html"):
     missing = sorted(date_set - set(d))
 
     disabled_dates = list(map(format_date_string, missing))
-    print(disabled_dates)
+    analytics_key = get_config_value()
 
-    return render(request, template_name, context={
-        'domains': json.dumps(list(domains.values())),
-        'ensforecastprefix': ens_forecast_prefix,
-        'detforecastprefix': det_forecast_prefix,
-        'disableddates': ','.join(disabled_dates)
-    })
+    if not domains.exists():
+       return render(request, template_name, context={
+           'ensforecastprefix': ens_forecast_prefix,
+           'detforecastprefix': det_forecast_prefix,
+           'disableddates': ','.join(disabled_dates),
+           'analytics_key': analytics_key,
+       })
+    else:
+       return render(request, template_name, context={
+           'domains': json.dumps(list(domains.values())),
+           'ensforecastprefix': ens_forecast_prefix,
+           'detforecastprefix': det_forecast_prefix,
+           'disableddates': ','.join(disabled_dates),
+           'analytics_key': analytics_key,
+       })
 
 
 @csrf_exempt
