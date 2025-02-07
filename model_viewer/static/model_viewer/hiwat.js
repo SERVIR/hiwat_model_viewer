@@ -1,194 +1,19 @@
 //Global Variables
-var currentDate = "20190902";
-// var dataset = "mkgEnsemble";
-var pastDate = "20180301";
-var webModelPath = "/ajax/getimage?";
-var initialTime = "1800";
-var forecastType = "ens";
-//var forecastprefix = "mkgEnsemble_";
-var initialTime; //Initialization Time
-var forecastHours; //Number of hours model is run
-var forecastInterval, modelName; //Model period, name of model
-var flList; //For list of forecast hours (i.e. fHHHMM)
-var dateSelected;
-var timeoutID = null;//Initalized timeout setting
-var syncStatus = false;//For racing issue between slider and ajax
-var looperSpeed = 500;//Intial speed of animation
-var resetSpeed = 500;//Reset to initial speed
-var currentSelection;
-
-var disableddates_no_more = ["20190901"
-    , "20190902"
-    , "20190903"
-    , "20190904"
-    , "20190905"
-    , "20190906"
-    , "20190907"
-    , "20190908"
-    , "20190909"
-    , "20190910"
-    , "20190911"
-    , "20190912"
-    , "20190913"
-    , "20190914"
-    , "20190915"
-    , "20190916"
-    , "20190917"
-    , "20190918"
-    , "20190919"
-    , "20190920"
-    , "20190921"
-    , "20190922"
-    , "20190923"
-    , "20190924"
-    , "20190925"
-    , "20190926"
-    , "20190927"
-    , "20190928"
-    , "20190929"
-    , "20190930"
-    , "20191001"
-    , "20191002"
-    , "20191003"
-    , "20191004"
-    , "20191005"
-    , "20191006"
-    , "20191007"
-    , "20191008"
-    , "20191009"
-    , "20191010"
-    , "20191011"
-    , "20191012"
-    , "20191013"
-    , "20191014"
-    , "20191015"
-    , "20191016"
-    , "20191017"
-    , "20191018"
-    , "20191019"
-    , "20191020"
-    , "20191021"
-    , "20191022"
-    , "20191023"
-    , "20191024"
-    , "20191025"
-    , "20191026"
-    , "20191027"
-    , "20191028"
-    , "20191029"
-    , "20191030"
-    , "20191031"
-    , "20191101"
-    , "20191102"
-    , "20191103"
-    , "20191104"
-    , "20191105"
-    , "20191106"
-    , "20191107"
-    , "20191108"
-    , "20191109"
-    , "20191110"
-    , "20191111"
-    , "20191112"
-    , "20191113"
-    , "20191114"
-    , "20191115"
-    , "20191116"
-    , "20191117"
-    , "20191118"
-    , "20191119"
-    , "20191120"
-    , "20191121"
-    , "20191122"
-    , "20191123"
-    , "20191124"
-    , "20191125"
-    , "20191126"
-    , "20191127"
-    , "20191128"
-    , "20191129"
-    , "20191130"
-    , "20191201"
-    , "20191202"
-    , "20191203"
-    , "20191204"
-    , "20191205"
-    , "20191206"
-    , "20191207"
-    , "20191208"
-    , "20191209"
-    , "20191210"
-    , "20191211"
-    , "20191212"
-    , "20191213"
-    , "20191214"
-    , "20191215"
-    , "20191216"
-    , "20191217"
-    , "20191218"
-    , "20191219"
-    , "20191220"
-    , "20191221"
-    , "20191222"
-    , "20191223"
-    , "20191224"
-    , "20191225"
-    , "20191226"
-    , "20191227"
-    , "20191228"
-    , "20191229"
-    , "20191230"
-    , "20191231"
-    , "20200101"
-    , "20200102"
-    , "20200103"
-    , "20200104"
-    , "20200105"
-    , "20200106"
-    , "20200107"
-    , "20200108"
-    , "20200109"
-    , "20200110"
-    , "20200111"
-    , "20200112"
-    , "20200113"
-    , "20200114"
-    , "20200115"
-    , "20200116"
-    , "20200117"
-    , "20200118"
-    , "20200119"
-    , "20200120"
-    , "20200121"
-    , "20200122"
-    , "20200123"
-    , "20200124"
-    , "20200125"
-    , "20200126"
-    , "20200127"
-    , "20200128"
-    , "20200129"
-    , "20200130"
-    , "20200131"
-    , "20200201"
-    , "20200202"
-    , "20200203"
-    , "20200204"
-    , "20200205"
-    , "20200207"
-    , "20200208"
-    , "20200209"
-    , "20200210"
-    , "20200211"
-    , "20200212"
-    , "20200213"
-    , "20200214"
-
-]
-var pname, fileType;
-var currentDate = "";
-var currentIsSummary = false;
-var initialTime = "";
+let webModelPath = "/ajax/getimage?";
+let forecastType = "ens";
+let forecastHours; //Number of hours model is run
+let forecastInterval, modelName; //Model period, name of model
+let flList; //For list of forecast hours (i.e. fHHHMM)
+var timeoutID;//Initalized timeout setting
+let looperSpeed = 500;//Intial speed of animation
+let resetSpeed = 500;//Reset to initial speed
+let currentSelection;
+let loopImages = [];
+let pname;
+let fileType;
+let currentDate = "";
+let currentIsSummary = false;
+let initialTime = "";
 
 function setForecast(which) {
     if (which === "ens") {
@@ -216,11 +41,10 @@ function getDocument() {
     $.ajax({
         url: "ajax/getjson",
         type: 'GET',
-        data: { "forecasttype": forecastType },
+        data: {"forecasttype": forecastType},
         success: function (result) {
             loadData(result);
             $("#datepicker").datepicker("setDate", getFormattedDate(currentDate).substring(0, 10));
-            //initHandleVal();
         }
     });
 }
@@ -238,7 +62,7 @@ function completeDatePicker(early, late) {
         dateFormat: "yymmdd",
         minDate: early, //"20190502",//Earliest Date in DIR
         maxDate: late, //"20190506",//Current Date in DIR
-        onSelect: function (dateText, instance) {
+        onSelect: function (dateText) {
             loadDate(dateText + initialTime);
         }
     });
@@ -246,12 +70,27 @@ function completeDatePicker(early, late) {
 
 $(document).ready(function () {
     getDocument();
+    $("#imghero").on("error", function() {
+        if(newmodelTimes.length){
+            let failed_url = $("#imghero").attr('src');
+            const split_url = failed_url.split("_");
+            var the_time = split_url[split_url.length - 2];
+            var new_time = newmodelTimes[0] + the_time.substring(newmodelTimes[0].length);
+            split_url[split_url.length - 2] = new_time;
+
+            $(this).attr("src", split_url.join("_"));
+
+        }else {
+            $(this).attr("src", "static/model_viewer/images/missing_image.png");
+        }
+        clearTimeout(myTimeOut);
+    });
 
 });
 
 function DisableSpecificDates(date) {//Disables certain dates in datepicker calendar
-    var string = jQuery.datepicker.formatDate('yymmdd', date);
-    return [disableddates.indexOf(string) == -1];
+    const string = jQuery.datepicker.formatDate('yymmdd', date);
+    return [disableddates.indexOf(string) === -1];
 }
 
 //*********yyyymmddhh - "2019050218" ****//
@@ -269,151 +108,166 @@ function loadDate(which) {
     });
 }
 
-var resultarray = [];
-function loadData(result) {
+function getMenuItem(itemData, isVariable, isSummaries, imageLoaded, data) {
+    if (!isSummaries) {
+        isSummaries = itemData.title === "Summaries";
+    }
+    let cssClass = "nav-item dropdown";
 
-    var data = JSON.parse(result);
-    var imageLoaded = false;
-    var getMenuItem = function (itemData, isVariable, isSummaries) {
-        if (!isSummaries) {
-            var isSummaries = itemData.title == "Summaries" ? true : false;
-        }
-        var cssClass = "nav-item dropdown";
-        var style = "";
-        var role = "";
-        var datatoggle = "";
-        var ariahaspopup = false;
-        var ariaexpanded = false;
-        var acss = "dropdown-item";
-        var item = $("<li>", { "class": cssClass })
-        if (!itemData.group) {
-
-            cssClass = "dropdown-submenu";
-        } else {
-            var hideAllDDOnClick = true;
-        }
-        if (!isVariable) {
-            acss = "nav-link dropdown-toggle";
-            role = "button";
-            datatoggle = "dropdown";
-            ariahaspopup = "true";
-            ariaexpanded = "false";
-            if (hideAllDDOnClick) {
-                item.append(
-                    $("<a>", {
-                        id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
-                        href: '#',
-                        html: itemData.title ? itemData.title : itemData.name,
-                        "class": acss,
-                        role: role,
-                        "aria-haspopup": ariahaspopup,
-                        "aria-expanded": ariaexpanded,
-                        "data-toggle": datatoggle,
-                        onclick: hideAllDD,
-                    }));
-            } else {
-                item.append(
-                    $("<a>", {
-                        id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
-                        href: '#',
-                        html: itemData.title ? itemData.title : itemData.name,
-                        "class": acss,
-                        role: role,
-                        "aria-haspopup": ariahaspopup,
-                        "aria-expanded": ariaexpanded,
-                        "data-toggle": datatoggle,
-                    }));
-            }
+    let role = "";
+    let datatoggle = "";
+    let ariahaspopup = false;
+    let ariaexpanded = false;
+    let acss = "dropdown-item";
+    let item = $("<li>", {"class": cssClass});
+    let hideAllDDOnClick = false;
+    if (itemData.group) {
+        hideAllDDOnClick = true;
+    }
+    if (!isVariable) {
+        acss = "nav-link dropdown-toggle";
+        role = "button";
+        datatoggle = "dropdown";
+        ariahaspopup = "true";
+        ariaexpanded = "false";
+        if (hideAllDDOnClick) {
+            item.append(
+                $("<a>", {
+                    id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
+                    href: '#',
+                    html: itemData.title ? itemData.title : itemData.name,
+                    "class": acss,
+                    role: role,
+                    "aria-haspopup": ariahaspopup,
+                    "aria-expanded": ariaexpanded,
+                    "data-toggle": datatoggle,
+                    onclick: hideAllDD,
+                }));
         } else {
             item.append(
                 $("<a>", {
                     id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
                     href: '#',
-                    html: itemData.title ? itemData.title : itemData.description,
+                    html: itemData.title ? itemData.title : itemData.name,
                     "class": acss,
                     role: role,
+                    "aria-haspopup": ariahaspopup,
+                    "aria-expanded": ariaexpanded,
+                    "data-toggle": datatoggle,
                 }));
         }
+    } else {
+        item.append(
+            $("<a>", {
+                id: (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_"),
+                href: '#',
+                html: itemData.title ? itemData.title : itemData.description,
+                "class": acss,
+                role: role,
+            }));
+    }
 
-        if (isVariable) {
-            if (isSummaries) {
-                if (!imageLoaded) {
-                    if (currentIsSummary) {
-                        if (currentSelection) {
-                            imageLoaded = true;
-                            loadImage(currentSelection, true);
-                        } else {
-                            loadImage(itemData.name, true);
-                        }
-                    }
-                }
-                item.on({
-                    'click': function () {
-                        $('#cover').show();
-                        pauseLooper();
-                        firstImage();
+    if (isVariable) {
+        if (isSummaries) {
+            if (!imageLoaded) {
+                if (currentIsSummary) {
+                    if (currentSelection) {
+                        imageLoaded = true;
+                        loadImage(currentSelection, true);
+                    } else {
                         loadImage(itemData.name, true);
-                        initializeSlider();
-                        loadSlider();
-                    }
-                });
-            } else {
-                if (!imageLoaded) {
-                    if (!currentIsSummary) {
-                        if (currentSelection) {
-                            loadImage(currentSelection);
-                            imageLoaded = true;
-                        } else {
-                            if (data.config.defaultVariable.name == itemData.name) {
-                                loadImage(itemData.name);
-                                imageLoaded = true;
-                            }
-                        }
                     }
                 }
-                item.on({
-                    'click': function () {
-                        $('#cover').show();
-                        pauseLooper();
-                        firstImage();
-                        loadImage(itemData.name);
-                        initializeSlider();
-                        loadSlider();
+            }
+            item.on({
+                'click': function () {
+                    $('#cover').show();
+                    pauseLooper();
+                    firstImage();
+                    console.log("menu clicked");
+                    loadImage(itemData.name, true);
+                    initializeSlider();
+                    loadSlider();
+                }
+            });
+        } else {
+            if (!imageLoaded) {
+                console.log("switched looking");
+                if (!currentIsSummary) {
+                    if (currentSelection) {
+                        console.log("Now Loading");
+                        loadImage(currentSelection);
+                        imageLoaded = true;
+                    } else {
+                        if (data.config.defaultVariable.name == itemData.name) {
+
+                            console.log(data.config.defaultVariable.name);
+                            loadImage(itemData.name);
+                            imageLoaded = true;
+                        }
                     }
-                });
+                } else{
+                    if (data.config.defaultVariable.name == itemData.name) {
+                            console.log(data.config.defaultVariable.name);
+                            loadImage(itemData.name);
+                            imageLoaded = true;
+                        }
+                }
             }
-        }
-        if (itemData.group) {
-            var labelledby = (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_");
-            var subList = $("<ul>", {
-                "class": "dropdown-menu border-0 shadow",
-                "aria-labelledby": labelledby
+            item.on({
+                'click': function () {
+                    $('#cover').show();
+                    pauseLooper();
+                    firstImage();
+                    console.log("this menu clicked");
+                    loadImage(itemData.name);
+                    initializeSlider();
+                    loadSlider();
+                }
             });
-            if (Array.isArray(itemData.group)) {
-                $.each(itemData.group, function () {
-                    subList.append(getMenuItem(this, false, isSummaries));
-                });
-            } else {
-                subList.append(getMenuItem(itemData.group, false, isSummaries));
-            }
+        }
+    }
+    if (itemData.group) {
+        const group_labelled_by = (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_");
+        const group_sub_list = $("<ul>", {
+            "class": "dropdown-menu border-0 shadow",
+            "aria-labelledby": group_labelled_by
+        });
+        if (Array.isArray(itemData.group)) {
+            $.each(itemData.group, function () {
+                group_sub_list.append(getMenuItem(this, false, isSummaries, imageLoaded, data));
+            });
+        } else {
+            group_sub_list.append(getMenuItem(itemData.group, false, isSummaries, imageLoaded, data));
+        }
 
-            item.append(subList);
-        }
-        if (itemData.variable) {
-            var labelledby = (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_");
-            var subList = $("<ul>", {
-                "class": "dropdown-menu border-0 shadow",
-                "aria-labelledby": labelledby
-            });
-            $.each(itemData.variable, function () {
-                subList.append(getMenuItem(this, true, isSummaries));
-            });
-            item.append(subList);
-        }
-        return item;
-    };
+        item.append(group_sub_list);
+    }
+    if (itemData.variable) {
+        const labelled_by = (itemData.title ? itemData.title : itemData.name).replace(new RegExp("/", 'g'), "_").replace(new RegExp(" ", 'g'), "_");
+        const sub_list = $("<ul>", {
+            "class": "dropdown-menu border-0 shadow",
+            "aria-labelledby": labelled_by
+        });
+        $.each(itemData.variable, function () {
+            sub_list.append(getMenuItem(this, true, isSummaries, imageLoaded, data));
+        });
+        item.append(sub_list);
+    }
+    return item;
+}
 
-    var $menu = $("#mymenu");
+const result_array = [];
+let debug_data;
+
+function loadData(result) {
+
+    const data = JSON.parse(result);
+    debug_data = data;
+    let imageLoaded = false;
+
+
+    const $menu = $("#mymenu");
     forecastHours = data.config.forecastHours;
     forecastInterval = data.config.forecastInterval;
     pname = data.config.defaultVariable.name;
@@ -424,10 +278,34 @@ function loadData(result) {
     completeDatePicker(data.config.earliest.substring(0, 8), data.config.latest.substring(0, 8));
     $("#txtinit").text(getFormattedDate(data.config.init));
     $menu.empty();
+    console.log("forecastType: " + forecastType);
+    if(forecastType === "ens") {
+        if (domains.length) {
+
+            var domain_menu = {
+                "title": "Domain",
+                "variable": domains
+                    .filter(function (item) {
+                        return item[forecastType + "_enabled"] === true;
+                    })
+                    .map(function (item) {
+                        return {
+                            id: item.id,
+                            description: item.title, // Change 'title' to 'description'
+                            name: item.abbreviation, // Change 'abbreviation' to 'variable'
+                        };
+                    })
+            };
+            $menu.append(
+                getMenuItem(domain_menu, false, false, false, debug_data)
+            );
+        }
+    }
+
     $.each(data.config.category, function () {
-        resultarray.push(this);
+        result_array.push(this);
         $menu.append(
-            getMenuItem(this)
+            getMenuItem(this, false, false, imageLoaded, data)
         );
     });
 
@@ -435,11 +313,13 @@ function loadData(result) {
     initializeSlider();
     loadSlider();
 
-    var item = $("<li>", { "class": "nav-item" });
-    var link = $("<a/>", { class: "nav-link", html: "Info", style: "cursor:pointer" });
-    link.click(function () { openInfo() });
+    const item = $("<li>", {"class": "nav-item"});
+    const link = $("<a/>", {class: "nav-link", html: "Info", style: "cursor:pointer"});
+    link.click(function () {
+        openInfo();
+    });
 
-    item.append(link)
+    item.append(link);
     $menu.append(item);
 }
 
@@ -448,7 +328,10 @@ function openInfo() {
 }
 
 var myTimeOut;
+var newmodelTimes = [];
+
 function initHandleVal() {
+    console.log("eeks");
     clearTimeout(myTimeOut);
     if (newmodelTimes[$("#forecastSlider").slider("value")]) {
         $("#custom-handle").text(newmodelTimes[$("#forecastSlider").slider("value")]);
@@ -463,20 +346,22 @@ function getFormattedDate(str) {
 
 function showImage(i) {
     document.getElementById("imghero").src = loopImages[i];
-};
+}
 
 //Used to speed up animations from speed up button
 function speedUp() {
     if (looperSpeed > 125) {
         looperSpeed = looperSpeed / 2;
-    };
+    }
+    ;
 };
 
 //Used to slow down animations from speed down button    
 function speedDown() {
     if (looperSpeed < 1000) {
         looperSpeed = looperSpeed * 2;
-    };
+    }
+    ;
 };
 
 //Displays the first image in the array from the first button
@@ -498,7 +383,7 @@ function nextImage() {
     if (valCheck >= (loopImages.length - 1) || valCheck >= $("#forecastSlider").slider("option", "max")) {//Reaches the end of the list
         $("#forecastSlider").slider("option", "value", 0);
     }
-};
+}
 
 //Steps through the image list to the previous one temporally
 function prevImage() {
@@ -521,7 +406,7 @@ function slideLooper() {
     if (valCheck >= (loopImages.length - 1)) {
         $("#forecastSlider").slider("option", "value", 0);
     }
-    timeoutId = setTimeout("slideLooper()", looperSpeed);
+    timeoutId = setTimeout(slideLooper, looperSpeed);
 }
 
 //Stops animation when stop button is pressed
@@ -531,7 +416,8 @@ function pauseLooper() {
             clearTimeout(timeoutId);
         }
         looperSpeed = resetSpeed;
-    } catch (e) { }
+    } catch (e) {
+    }
 }
 
 function loadLevels() {
@@ -556,60 +442,124 @@ function hideAllDD() {
     $('.dropdown-menu .show').removeClass("show");
 }
 
+let current_parameters = {};
+
 function loadImage(which, isSummaries) {
-    //ensmin-tmp2m
-    //https://weather.msfc.nasa.gov/sport/dynamic/hinduKushEnsemble/20190902/hkhEnsemble_20190902-1800_f00100_ensmin-tmp2m.gif
-    var hour = "f00100";
-    if (which.indexOf("6h") > -1 ||
-        which.indexOf("d05") > -1) {
-        hour = "f00600";
-    } else if (which.indexOf("12h") > -1) {
-        hour = "f01200";
-    } else if (isSummaries || which.indexOf("24h") > -1) {
-        if (initialTime == 12 && which.indexOf("-max") > -1) {
-            hour = "f03000";
-        } else {
-            hour = "f02400";
+
+    console.log("loadImage: " + which);
+
+    let qParameter;
+    /**
+     * @param {{abbreviation:string}} domain
+     */
+    const isDomain = domains.some(function (domain) {
+        return domain.abbreviation === which;
+    });
+    if (isDomain) {
+        console.log("domain changed");
+
+        console.log("current_parameters: " + current_parameters);
+
+        console.log("which: " + which);
+
+        split_var = current_parameters.which.split("-");
+        joined_var = [split_var.slice(0, 1), which, split_var.slice(1).join("-")].join("-");
+
+        if (joined_var.endsWith('-')) {
+                joined_var = joined_var.slice(0, -1);
+            }
+        qParameter = `imagename=${current_parameters.currentDate}${current_parameters.initialTime}/${current_parameters.forecastType}/${current_parameters.forecastprefix}${current_parameters.currentDate}-${current_parameters.initialTime}00_${current_parameters.hour}_${joined_var}.gif`;
+
+        current_parameters.domain = which;
+        $("#imghero").attr("src",
+            "ajax/getimage?" + qParameter);
+        $("#imghero").attr("alt", which);
+        $("#imghero").attr("title", which);
+
+    } else {
+        console.log("in the else: " + current_parameters.domain);
+        if(forecastType === "ens") {
+            if (domains.length && !current_parameters.domain) {
+
+                current_parameters.domain = 'd02';
+            }
         }
-    } else if (which.indexOf("mucaped") > -1 ||
-        which.indexOf("d04") > -1 ||
-        which.indexOf("relh") > -1 ||
-        which.indexOf("soilt") > -1 ||
-        which.indexOf("soilm") > -1 ||
-        which.indexOf("gvf") > -1 ||
-        which.indexOf("isot") > -1 ||
-        which.indexOf("tmpc") > -1 ||
-        which.indexOf("dwpc") > -1 ||
-        which.indexOf("pwtr") > -1 ||
-        // which.indexOf("sbcape") > -1 ||
-        which.indexOf("scpd") > -1 ||
-        which.indexOf("shipd") > -1 ||
-        which.indexOf("tskin") > -1) {
-        hour = "f00000";
-    } else if (which.indexOf("3h") > -1) {
-        hour = "f00300";
+        let hour = "f00100";
+        if (which.indexOf("6h") > -1 ||
+            which.indexOf("d05") > -1) {
+            hour = "f00600";
+        } else if (which.indexOf("12h") > -1) {
+            hour = "f01200";
+        } else if (isSummaries || which.indexOf("24h") > -1) {
+            if ((initialTime == 12 || initialTime == '00') && which.indexOf("-max") > -1) {
+                hour = "f03000";
+            } else {
+                hour = "f02400";
+            }
+        } else if (which.indexOf("mucaped") > -1 ||
+            which.indexOf("d04") > -1 ||
+            which.indexOf("relh") > -1 ||
+            which.indexOf("soilt") > -1 ||
+            which.indexOf("soilm") > -1 ||
+            which.indexOf("gvf") > -1 ||
+            which.indexOf("isot") > -1 ||
+            which.indexOf("tmpc") > -1 ||
+            which.indexOf("dwpc") > -1 ||
+            which.indexOf("pwtr") > -1 ||
+            which.indexOf("200tmpc") > -1 ||
+            which.indexOf("scpd") > -1 ||
+            which.indexOf("shipd") > -1 ||
+            which.indexOf("tskin") > -1) {
+            hour = "f00000";
+        } else if (which.indexOf("3h") > -1) {
+            hour = "f00300";
+        }
+        currentSelection = which;
+        currentIsSummary = isSummaries;
+        if(forecastType === "ens") {
+        if (domains.length) {
+
+
+            domains.forEach(domain => {
+                let abbreviation = domain.abbreviation;
+                let pattern = new RegExp(`-${abbreviation}`, 'g');
+                which = which.replace(pattern, '');
+            });
+            which = which.replace("d01", '');
+
+            split_var = which.split("-");
+
+
+            joined_var = [split_var.slice(0, 1), current_parameters.domain, split_var.slice(1).join("-")].join("-");
+            if (joined_var.endsWith('-')) {
+                joined_var = joined_var.slice(0, -1);
+            }
+            qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${joined_var}.gif`;
+
+            // qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}-${current_parameters.domain}.gif`;
+
+        } else {
+            qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}.gif`;
+        }}else {
+            qParameter = `imagename=${currentDate}${initialTime}/${forecastType}/${forecastprefix}${currentDate}-${initialTime}00_${hour}_${which}.gif`;
+        }
+        console.log("newmodelTimes.length: " + newmodelTimes.length);
+        $("#imghero").attr("src",
+            "ajax/getimage?" + qParameter);
+        $("#imghero").attr("alt", which);
+        $("#imghero").attr("title", which);
+        $('.dropdown-submenu .show').removeClass("show");
+        hideAllDD();
+        current_parameters = {
+            "currentDate": currentDate,
+            "initialTime": initialTime,
+            "forecastType": forecastType,
+            "forecastprefix": forecastprefix,
+            "hour": hour,
+            "which": which,
+            "domain": current_parameters.domain
+        };
     }
-    currentSelection = which;
-    currentIsSummary = isSummaries;
-    var qParameter = "imagename="
-        + currentDate + initialTime
-        + "/"
-        + forecastType
-        + "/"
-        + forecastprefix
-        + currentDate
-        + "-"
-        + initialTime
-        + "00_"
-        + hour
-        + "_"
-        + which
-        + ".gif";
-    $("#imghero").attr("src",
-        "ajax/getimage?" + qParameter);
-    $("#imghero").attr("alt", which);
-    $("#imghero").attr("title", which);
-    $('.dropdown-submenu .show').removeClass("show");
     hideAllDD();
 }
 
@@ -657,8 +607,7 @@ function calculateModelTimes(duration, interval) {
             padString = String((typeof padString !== 'undefined' ? padString : ' '));
             if (this.length > targetLength) {
                 return String(this);
-            }
-            else {
+            } else {
                 targetLength = targetLength - this.length;
                 if (targetLength > padString.length) {
                     padString += padString.repeat(targetLength / padString.length); //append to original to ensure we are longer than needed
@@ -686,7 +635,7 @@ function calculateModelTimes(duration, interval) {
         }
     }
     // Return the two arrays as objects
-    return { sliderInfo: sliderString, fileInfo: fileString };
+    return {sliderInfo: sliderString, fileInfo: fileString};
 }
 
 function initializeSlider() {
@@ -704,11 +653,14 @@ function initializeSlider() {
     flList = timeStrings.fileInfo;
     mdList = timeStrings.sliderInfo;
     flLength = flList.length;
+
     createFileList();
     newmodelTimes = newmodelTimes.sort();
     loopImages = loopImages.sort();
     //syncSlider();
 }
+
+var debugsplit_var;
 
 function createFileList() {
     nameList = [];//To be used to get list of filenames
@@ -722,27 +674,72 @@ function createFileList() {
     loopImages = [];
     errorImages = [];
     newmodelTimes = [];
+    //check if domain, if so modify the currentSelection to add domain in
+    console.log("current_parameters.domain: " + current_parameters.domain);
+    if(forecastType === "ens"){
+        if (domains.length) {
+            if (domains.length && !current_parameters.domain) {
+                current_parameters.domain = 'd02';
+            }
+
+            console.log("currentSelection: " + currentSelection);
+
+            domains.forEach(domain => {
+                let abbreviation = domain.abbreviation;
+                let pattern = new RegExp(`-${abbreviation}`, 'g');
+                currentSelection = currentSelection.replace(pattern, '');
+            });
+            currentSelection = currentSelection.replace("d01", '');
+
+            split_var = currentSelection.split("-").filter(i => i);
+            debugsplit_var = split_var;
+            joined_var = [split_var.slice(0, 1), current_parameters.domain, split_var.slice(1).join("-")].join("-");
+
+
+            if (joined_var.endsWith('-')) {
+                joined_var = joined_var.slice(0, -1);
+            }
+
+
+            console.log("joined_var: " + joined_var);
+
+
+        }
+    }
     var nameFile;
     for (var k = 0; k < flList.length; k++) {
-        nameList.push(webModelPath + 'imagename=' + currentDate + initialTime + '/' + forecastType + '/' + forecastprefix + currentDate + '-' + initialTime + '00_' + flList[k] + '_' + currentSelection + '.' + fileType);
-    };
+        if(forecastType === "ens") {
+            if (domains.length) {
+                url_name = joined_var;
+            } else {
+                url_name = currentSelection;
+            }
+        } else{
+            url_name = currentSelection;
+        }
+        nameList.push(webModelPath + 'imagename=' + currentDate + initialTime + '/' + forecastType + '/' + forecastprefix + currentDate + '-' + initialTime + '00_' + flList[k] + '_' + url_name + '.' + fileType);
+    }
+
     //Check to see what files are available and add them to loopImages and newmodelTimes Lists
     $.each(nameList, function (i, item) {
         myxhr = new XMLHttpRequest();
         myxhr.open("GET", item, true);
         myxhr.send(item);
+        // console.log("Checking images");
         myxhr.onreadystatechange = function () {
             if (i < stopPoint) {
                 if (this.readyState == 4 && this.status == 404) {//Missing File				
                     errorImages.push(item);
                 } else if (this.readyState == 4 && this.status == 200) {//File exists
+                    // console.log("thinks it found: " + item);
                     loopImages.push(item);
                     newmodelTimes.push(mdList[i]);
                     newmodelTimes = newmodelTimes.sort();
                     loopImages = loopImages.sort();
-                };
+                }
             } else {//What to do with the last file
                 if (this.readyState == 4 && this.status == 200) {
+                    // console.log("thinks it found in second loop: " + item);
                     loopImages.push(item);
                     newmodelTimes.push(mdList[i]);
                     loopImages = loopImages.sort();
@@ -755,10 +752,11 @@ function createFileList() {
                     newmodelTimes = newmodelTimes.sort();
                     sliderStatus = true;
                 }
-                loadSlider();
-                initHandleVal();
-            };
-        }
+                console.log("past finding");
+                 loadSlider();
+                 initHandleVal();
+            }
+        };
     });
 
 }

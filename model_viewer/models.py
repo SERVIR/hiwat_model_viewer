@@ -18,8 +18,21 @@ class DataPath(models.Model):
     def save(self, *args, **kwargs):
         super(DataPath, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return str(self.id) + "-" + self.title
+
     class Meta:
         ordering = ['created_on']
 
         def __unicode__(self):
             return self.title
+
+
+class Domain(models.Model):
+    title = models.CharField(max_length=255)
+    abbreviation = models.CharField(max_length=255)
+    ens_enabled = models.BooleanField(default=False)
+    det_enabled = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title + "- (" + self.abbreviation + ")"
